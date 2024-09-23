@@ -1,6 +1,8 @@
 # bot.py
 import discord
 from discord.ext import commands
+from discord import app_commands
+
 import os
 import logging
 import asyncio
@@ -8,15 +10,17 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from config import TOKEN, COMMAND_PREFIX
 from settings import LOGGING_CONFIG
+import logging.config
+
 
 # Logging konfigurieren
-import logging.config
 logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger('bot')
 
 # Bot-Initialisierung
-intents = discord.Intents.default()
+intents = discord.Intents.all()
 intents.message_content = True
+
 bot = commands.Bot(command_prefix=COMMAND_PREFIX, intents=intents)
 
 #Observer Starten
@@ -52,7 +56,13 @@ async def on_ready():
     observer.start()
     logger.info("Started watching for file changes...")
     await load_cogs()  # Cogs laden
-    logger.info("Bot ist gestartet")  # Manuelle Log-Nachricht
+    logger.info("Cogs Geladen")
+    try:
+        tguild = discord.Object(id=911273680301084753)
+        synced = await bot.tree.sync()
+        print(f"Synced {len(synced)} Command(s)")
+    except Exception as e:
+        logger.error(e)
     print(" ")
     print("----------------------------")
     print("############################")
@@ -61,8 +71,11 @@ async def on_ready():
     print("----------------------------")
     print(" ")
 
+
 try:
     bot.run(TOKEN)
+except Exception as e:
+    logger.error("ERROR Bot konnte nicht gestarted werden {e}")
 finally:
     observer.stop()
     observer.join()
