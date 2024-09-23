@@ -1,0 +1,10 @@
+# Log-Dateien ignorieren
+logs/bot.log
+logs/error.log
+logs/infos.log
+logs/log.log
+
+# Umgebungsvariablen und Einstellungen ignorieren
+.env
+settings.py
+config.py
