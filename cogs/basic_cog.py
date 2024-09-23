@@ -8,7 +8,7 @@ class Basic(commands.Cog):
 
     @commands.command(help='Antwortet mit Pong und erwähnt den Benutzer.')
     async def Ping(self, ctx):
-        await ctx.send(f'Pong! {ctx.author.mention}')
+        await ctx.send(f'Pong!!! {ctx.author.mention}')
 
 async def setup(bot):
     await bot.add_cog(Basic(bot))

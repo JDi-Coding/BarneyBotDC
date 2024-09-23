@@ -42,6 +42,7 @@ class LoggingCog(commands.Cog):
     async def on_command_error(self, ctx, error):
         logging.getLogger('error').error(f'Fehler bei Befehl {ctx.command}: {error}')
         await ctx.send('Ein Fehler ist aufgetreten.')
+        await ctx.send('Command Vielleicht falschgeschrieben versuche !!help')
 
 async def setup(bot):
     await bot.add_cog(LoggingCog(bot))
