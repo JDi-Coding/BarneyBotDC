@@ -27,10 +27,10 @@ class TempVoice(commands.Cog):
                 logger.info("Permission set for tempChannel: " + str(temp_channel_name))
                 # Move den Nutzer in den neu erstellten Channel
                 await member.move_to(temp_channel)
-                logger.info("Moved member:" + member.name + "to TempChannel")
+                logger.info("Moved member: " + member.name + " to TempChannel:"+ str(temp_channel_name))
                 # Speichere die temporäre Channel-ID und den Ersteller
                 self.temp_channels[temp_channel.id] = member.id
-                logger.info("Saved TempID: "+ str(temp_channel.id))
+                logger.info("Saved TempID: " + str(temp_channel.id))
 
         # Wenn der Nutzer einen Channel verlässt
         if before.channel:
@@ -38,7 +38,7 @@ class TempVoice(commands.Cog):
             if before.channel.id in self.temp_channels:
                 if len(before.channel.members) == 0:
                     await before.channel.delete()
-                    logger.info("Deleting temp_Channel: " + str(temp_channel_name) + "for: " + member.nick)
+                    logger.info("Deleting "+ member.nick + " temp_Channel")
                     del self.temp_channels[before.channel.id]
                     
 
