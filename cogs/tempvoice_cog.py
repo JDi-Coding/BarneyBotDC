@@ -2,7 +2,8 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-
+import logging.config
+logger = logging.getLogger('bot')
 class TempVoice(commands.Cog):
     # Speichert die IDs der temporären Channels und deren Ersteller
     def __init__(self, bot):
@@ -15,17 +16,21 @@ class TempVoice(commands.Cog):
         # Wenn der Nutzer einen Channel betritt
         if after.channel:
             # Prüfen, ob er den speziellen 'temp' Channel betritt
+            logger.info(member.name + ": joined temp")
             if after.channel.name == "temp":
                 # Erstelle einen temporären Channel mit dem Namen des Nutzers
                 temp_channel_name = f"{member.display_name}'s room"
                 temp_channel = await after.channel.clone(name=temp_channel_name)
+                logger.info("Created temp_Channel: " + str(temp_channel_name) + "for: " + member.nick)
                 # Setze Berechtigungen nur für den Nutzer
                 await temp_channel.set_permissions(member, connect=True, manage_channels=True, manage_permissions=True)
+                logger.info("Permission set for tempChannel: " + str(temp_channel_name))
                 # Move den Nutzer in den neu erstellten Channel
                 await member.move_to(temp_channel)
-
+                logger.info("Moved member:" + member.name + "to TempChannel")
                 # Speichere die temporäre Channel-ID und den Ersteller
                 self.temp_channels[temp_channel.id] = member.id
+                logger.info("Saved TempID: "+ str(temp_channel.id))
 
         # Wenn der Nutzer einen Channel verlässt
         if before.channel:
@@ -33,7 +38,9 @@ class TempVoice(commands.Cog):
             if before.channel.id in self.temp_channels:
                 if len(before.channel.members) == 0:
                     await before.channel.delete()
+                    logger.info("Deleting temp_Channel: " + str(temp_channel_name) + "for: " + member.nick)
                     del self.temp_channels[before.channel.id]
+                    
 
     # Slash-Befehl zum Ändern des Channel-Namens
     @discord.app_commands.command(name="channelname", description="Ändert den Namen des temporären Voice-Channels.")
