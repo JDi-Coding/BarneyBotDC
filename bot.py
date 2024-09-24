@@ -58,7 +58,7 @@ async def on_ready():
     await load_cogs()  # Cogs laden
     logger.info("Cogs Geladen")
     try:
-        tguild = discord.Object(id=911273680301084753)
+        #tguild = discord.Object(id=911273680301084753)
         synced = await bot.tree.sync()
         print(f"Synced {len(synced)} Command(s)")
     except Exception as e:
