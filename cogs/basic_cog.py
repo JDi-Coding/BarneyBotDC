@@ -29,7 +29,7 @@ class BasicCog(commands.Cog):
     @discord.app_commands.command(name="baum", description="Der Baum hat grüne Blätter und einen braunen Stamm.", nsfw=False)
     async def baum(self, interaction: discord.Interaction):
         await interaction.response.send_message("Der Baum hat grüne Blätter und einen braunen Stamm.")
-
+        
     #Befehl um alle Verfügbaren SlashBefehle anzuzeigen
     @commands.command(
             help="hope it was helpfull : )",
@@ -50,6 +50,7 @@ class BasicCog(commands.Cog):
             await ctx.send(f"Verfügbare Basic-Slash-Befehle:\n{commands_str}")
         else:
             await ctx.send("Es gibt keine slash Befehle in dieser Kategorie")
+
 
 
 

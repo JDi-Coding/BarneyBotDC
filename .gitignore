@@ -6,6 +6,18 @@ logs/log.log
 
 #data Ordner Ignorieren
 data/
+downloads/
+
+# Cookie File IGnoriere
+cookies.txt
+cookies1.txt
+convert_cookies.py
+
+# Ohter Ignore
+test/
+test.py
+ideas.txt
+
 
 # Umgebungsvariablen und Einstellungen ignorieren
 .env
