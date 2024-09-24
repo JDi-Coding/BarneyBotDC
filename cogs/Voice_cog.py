@@ -2,8 +2,12 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
+import discord.opus
 import logging.config
 logger = logging.getLogger('bot')
+import os
+import random
+
 
 class Voice(commands.Cog):
     def __init__(self, bot):
@@ -39,6 +43,38 @@ class Voice(commands.Cog):
         else:
             # Bot ist in keinem Voice-Channel
             await interaction.response.send_message("Ich bin in keinem Voice-Channel.", ephemeral=True)
+
+    # Befehl zum Abspielen einer zufälligen Audiodatei
+    @discord.app_commands.command(name="makesound", description="Spielt eine zufällige Audiodatei ab")
+    async def makesound(self, interaction: discord.Interaction):
+        # Überprüfe, ob der Bot bereits in einem Voice-Channel ist
+        voice_client = interaction.guild.voice_client
+        if voice_client is None:
+            await interaction.response.send_message("Ich bin nicht in einem Voice-Channel. Nutze zuerst /join.", ephemeral=True)
+            return
+
+        # Verzeichnis mit den Audiodateien
+        sound_dir = 'data/sounds'   
+        # Liste alle Audiodateien im Verzeichnis auf
+        all_files = os.listdir(sound_dir)
+        sound_files = [file for file in all_files if file.endswith(('.mp3', '.wav'))]
+        # Überprüfe, ob Audiodateien vorhanden sind
+        if not sound_files:
+            await interaction.response.send_message("Es gibt keine Audiodateien im Verzeichnis.", ephemeral=True)
+            return
+        # Wähle eine zufällige Audiodatei aus
+        selected_sound = random.choice(sound_files)
+        sound_path = os.path.join(sound_dir, selected_sound)
+        # Spielt die Audiodatei ab
+        audio_source = discord.FFmpegPCMAudio(sound_path)
+        if not voice_client.is_playing():
+            voice_client.play(audio_source)
+            await interaction.response.send_message(f"Spiele Sound: {selected_sound}", ephemeral=True)
+            logger.info(f"Playing sound: {selected_sound}")
+        else:
+            await interaction.response.send_message("Es wird bereits ein Sound abgespielt.", ephemeral=True)
+
+
 
     #Befehl um alle Verfügbaren SlashBefehle anzuzeigen
     @commands.command(
