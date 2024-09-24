@@ -4,6 +4,9 @@ logs/error.log
 logs/infos.log
 logs/log.log
 
+#data Ordner Ignorieren
+data/
+
 # Umgebungsvariablen und Einstellungen ignorieren
 .env
 settings.py

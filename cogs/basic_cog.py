@@ -23,12 +23,6 @@ class BasicCog(commands.Cog):
     @discord.app_commands.command(name="baum", description="Der Baum hat grüne Blätter und einen braunen Stamm.")
     async def baum(self, interaction: discord.Interaction):
         await interaction.response.send_message("Der Baum hat grüne Blätter und einen braunen Stamm.")
-    
-    @discord.app_commands.command(name="wow", description="Sendet ein wow GIF.")
-    async def wow(self, interaction: discord.Interaction):
-        await interaction.response.send_message(content="Hier ist das Bild:", file=discord.File('./wow.gif'))
-
-
 
 async def setup(bot):
     await bot.add_cog(BasicCog(bot))
