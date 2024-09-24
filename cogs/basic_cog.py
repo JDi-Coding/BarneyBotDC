@@ -30,7 +30,7 @@ class BasicCog(commands.Cog):
     async def baum(self, interaction: discord.Interaction):
         await interaction.response.send_message("Der Baum hat grüne Blätter und einen braunen Stamm.")
 
-     #Befehl um alle Verfügbaren SlashBefehle anzuzeigen
+    #Befehl um alle Verfügbaren SlashBefehle anzuzeigen
     @commands.command(
             help="hope it was helpfull : )",
             description="this Command Shows every Slash-Command available in this Category. usage: [Prefix][Category]info",
@@ -47,7 +47,7 @@ class BasicCog(commands.Cog):
         #Naricht mit allen Befehlen generieren
         if meme_commands:
             commands_str = "\n".join(f"/{cmd}" for cmd in meme_commands)
-            await ctx.send(f"Verfügbare Meme-Slash-Befehle:\n{commands_str}")
+            await ctx.send(f"Verfügbare Basic-Slash-Befehle:\n{commands_str}")
         else:
             await ctx.send("Es gibt keine slash Befehle in dieser Kategorie")
 

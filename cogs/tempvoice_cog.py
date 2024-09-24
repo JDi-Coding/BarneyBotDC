@@ -90,5 +90,27 @@ class TempVoice(commands.Cog):
         else:
             await interaction.response.send_message("Du bist nicht in einem temporären Channel.", ephemeral=True)
 
+    #Befehl um alle Verfügbaren SlashBefehle anzuzeigen
+    @commands.command(
+            help="hope it was helpfull : )",
+            description="this Command Shows every Slash-Command available in this Category. usage: [Prefix][Category]info",
+            brief="-> Shows every Slash-Command",
+            enabled=True, #Enables the Command or Disable the Command [TRUE/FALSE]
+            hidden=False #Hids the Command for !help altough !help ping shows still information [TRUE/FALSE]
+    )
+    async def TempVCInfo(self, ctx):
+        # Alle /-Befehle des Bots
+        commands_list = self.bot.tree.get_commands()
+        # Filtere die Slash-Befehle, die zu dieser Klasse gehören
+        meme_commands = [cmd.name for cmd in commands_list if isinstance(cmd, app_commands.Command) and cmd.binding == self]
+
+        #Naricht mit allen Befehlen generieren
+        if meme_commands:
+            commands_str = "\n".join(f"/{cmd}" for cmd in meme_commands)
+            await ctx.send(f"Verfügbare Temp-Slash-Befehle:\n{commands_str}")
+        else:
+            await ctx.send("Es gibt keine slash Befehle in dieser Kategorie")
+
+
 async def setup(bot):
     await bot.add_cog(TempVoice(bot))
