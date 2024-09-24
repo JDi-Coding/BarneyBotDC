@@ -21,7 +21,7 @@ class TempVoice(commands.Cog):
                 # Erstelle einen temporären Channel mit dem Namen des Nutzers
                 temp_channel_name = f"{member.display_name}'s room"
                 temp_channel = await after.channel.clone(name=temp_channel_name)
-                logger.info("Created temp_Channel: " + str(temp_channel_name) + "for: " + member.nick)
+                logger.info("Created temp_Channel: " + str(temp_channel_name) + " for: " + member.nick)
                 # Setze Berechtigungen nur für den Nutzer
                 await temp_channel.set_permissions(member, connect=True, manage_channels=True, manage_permissions=True)
                 logger.info("Permission set for tempChannel: " + str(temp_channel_name))
