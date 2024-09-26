@@ -14,7 +14,9 @@ cookies1.txt
 convert_cookies.py
 
 # Ohter Ignore
-test/
+B-Models/
+TestBot
+TestBot/
 test.py
 ideas.txt
 

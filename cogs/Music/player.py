@@ -1,0 +1,276 @@
+import discord
+import yt_dlp
+import urllib.parse
+from pytube import Playlist as PytubePlaylist
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
+import re
+import logging
+logger = logging.getLogger('bot')
+
+class Player:
+    def __init__(self, bot):
+        self.bot = bot
+        self.youtube_base_url = 'https://www.youtube.com/'
+        self.voice_client = None
+        self.source = None
+        self.defaultvolume = 0.25
+        self.volume = 0.25
+        self.defaultbassboost = 0.0
+        self.bassboost = 0.0
+        self.defaulttreble = 0.0
+        self.treble = 0.0     
+        self.defaultffmpeg_options = {
+            'before_options': f'-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
+            'options': f'-vn -filter:a "volume={self.defaultvolume}, bass=g={self.defaultbassboost}, treble=g={self.defaulttreble}"'
+        }
+        self.ffmpeg_options = {
+            'before_options': f'-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
+            'options': f'-vn -filter:a "volume={self.volume}, bass=g={self.bassboost}, treble=g={self.treble}"'
+        }      
+        self.is_playing = False
+        self.songs = []  # Warteschlange für Songs
+        self.playlist = [] #Playlist zum hin und her Navigieren
+        self.current_index = -1  # -1 bedeutet, dass kein Song aktuell gespielt wird
+        self.executor = ThreadPoolExecutor(max_workers=5)
+        self.current_song = -1 # -1 = kein Current song
+        self.currentsongurl = None
+        self.effects_chain = ""
+
+    async def play(self, voice_client, link: str, added_by: str):
+        if voice_client is None or not voice_client.is_connected():
+            raise ValueError("Der Bot ist nicht mit einem Sprachkanal verbunden.")
+
+        link = self.normalize_youtube_url(link)  # Normalisiere die URL
+
+        if "youtube.com/playlist" in link:  #YouTube-Playlist
+            try:
+                yt_playlist = PytubePlaylist(link)  # Pytube-Playlist verwenden
+                for url in yt_playlist:
+                    cleanurl = self.normalize_youtube_url(url)
+                    data = await self.bot.loop.run_in_executor(None, lambda: self.extract_video_info(cleanurl))
+                    title, song_url, duration, thumbnail = data
+                    convertedduration = self.convert_seconds_to_duration(duration)
+                    self.add_song(title, song_url, cleanurl, convertedduration, thumbnail, added_by)
+                    logger.info(f"Song hinzugefügt: {title}, Dauer: {duration}")
+                if not self.is_playing:
+                    await self.play_next(voice_client)
+            except Exception as e:
+                raise ValueError(f"An error occurred while fetching the playlist: {str(e)}")
+        else: #Einzelnes YouTube-Video 
+            try:
+                data = await self.bot.loop.run_in_executor(None, lambda: self.extract_video_info(link))
+                title, song_url, duration, thumbnail = data
+                convertedduration = self.convert_seconds_to_duration(duration)
+                self.add_song(title, song_url, link, convertedduration, thumbnail, added_by)
+                logger.info(f"Song hinzugefügt: {title}, Dauer: {duration}")
+                if not self.is_playing:
+                    await self.play_next(voice_client)
+            except Exception as e:
+                raise ValueError(f"An error occurred while fetching the song: {str(e)}")
+        # Überprüfen, ob ein Song erfolgreich hinzugefügt wurde
+        if len(self.songs) > 0:
+            return self.songs[-1]['title'], self.songs[-1].get('duration', '0'), self.songs[-1].get('thumbnail', '')
+        else:
+            return "Kein Titel", "0", ""
+ 
+    def extract_video_info(self, link):
+        """Hilfsfunktion, um die Video-Informationen abzurufen."""
+        ydl_opts = {
+            'format': 'bestaudio/best',
+            'noplaylist': True,  # Nur ein einzelnes Video verarbeiten, keine Playlists
+        }
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            video = ydl.extract_info(link, download=False)
+        # Extrahiere die Informationen
+        title = video.get('title', 'Unknown Title') #Hole Title sonst Unkowntitle
+        # Song URL: Hole die URL aus dem 'formats'-Schlüssel, falls 'url' nicht existiert
+        song_url = video.get('url')  # Normalerweise hier
+        if not song_url and 'formats' in video:
+            song_url = video['formats'][0].get('url', '')
+        if not song_url:
+            raise ValueError(f"Could not retrieve song URL for the video '{title}'")
+        duration = video.get('duration', 0)  # Dauer abrufen, standardmäßig 0
+        thumbnail = video.get('thumbnail', '')  # Thumbnail abrufen
+        return title, song_url, duration, thumbnail
+       
+    def normalize_youtube_url(self, url):
+        """Normalizes various YouTube URL formats into a standard format and handles playlists."""
+        parsed_url = urllib.parse.urlparse(url)
+        base_url = f"{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}"
+
+        # Fall 1: Es ist ein Video-Link (normalisiere auf den Standard-Video-Link)
+        if "youtube.com/watch" in base_url or "youtu.be" in base_url:
+            if "v=" in parsed_url.query:
+                video_id = urllib.parse.parse_qs(parsed_url.query)["v"][0]
+                return f"https://www.youtube.com/watch?v={video_id}"
+            elif len(parsed_url.path.split("/")) > 1:
+                video_id = parsed_url.path.split("/")[-1]
+                return f"https://www.youtube.com/watch?v={video_id}"
+
+        # Fall 2: Es ist ein Playlist-Link (normalisiere und erkenne die Playlist-ID)
+        elif "youtube.com/playlist" in base_url and "list=" in parsed_url.query:
+            playlist_id = urllib.parse.parse_qs(parsed_url.query)["list"][0]
+            return f"https://www.youtube.com/playlist?list={playlist_id}"
+
+        return url
+  
+    def convert_seconds_to_duration(self, seconds):
+        minutes, seconds = divmod(seconds, 60)
+        return f"{minutes}:{seconds:02d}"
+
+    def add_song(self, title: str, url: str, shorturl: str, duration: str, thumbnail: str, added_by: str)-> None:
+        # Überprüfe, ob die Dauer im richtigen Format ist
+        if not isinstance(duration, str) or not re.match(r'^\d+:\d{2}$|^\d+:\d{2}:\d{2}$', duration):
+            logger.error(f"Ungültiges Dauerformat für den Song '{title}': {duration}")
+            duration = "0:00"  # Setze auf einen Standardwert, wenn die Dauer ungültig ist   
+        
+        playlistid = self.playlistcounter(self.songs)  
+        self.songs.append({
+            'playlistid': playlistid,
+            'title': title,
+            'url': url,
+            'shorturl': shorturl,
+            'duration': duration,
+            'thumbnail': thumbnail,
+            'added_by': added_by
+        })
+        self.playlist.append(
+            [playlistid, self.songs[-1]]
+        )     
+    
+    def playlistcounter(self, playlist: list)->int:
+        ID = len(playlist)
+        ID + 1 # Addiere immer um 1 weil Neuer Eintrag
+        return ID
+       
+    async def play_next(self, voice_client):
+        """Play the next song in the queue if available."""
+        if voice_client is None or not voice_client.is_connected():
+            self.is_playing = False
+            return  # Stoppe hier, wenn der Bot nicht verbunden ist
+        if self.songs:
+            next_song = self.songs.pop(0)  # Hole den nächsten Song
+            current_song = next_song
+            self.currentsongurl = next_song['url']
+            self.voice_client = voice_client
+            self.source = discord.FFmpegPCMAudio(next_song['url'], **self.ffmpeg_options)
+            voice_client.play(self.source, after=lambda e: self.bot.loop.create_task(self.play_next(voice_client)))
+            self.set_current_song(current_song['playlistid'])  # Setze den aktuellen Song
+            self.is_playing = True
+            logger.info(f"Spiele den nächsten Song: {next_song['title']}")
+            return next_song['title']
+        else:
+            self.is_playing = False
+            
+    def get_current_song(self):
+        logger.info("get Current INDEX")
+        if self.current_index >= 0:
+            logger.info("CurrendIndex: " + str(self.current_index))
+            currendPlaylistIndex = self.playlist[self.current_index]
+            return currendPlaylistIndex[-1]
+        return None
+
+    def set_current_song(self, song: int):
+        """Setze den aktuellen Song in der Warteschlange."""
+        logger.info("set Current INDEX: " + str(song))
+        self.current_index = song
+        print(self.current_index)
+
+#######################
+#Funktionalität
+#######################
+
+    def pause(self, voice_client):
+        if voice_client.is_playing():
+            voice_client.pause()
+            
+    def resume(self, voice_client):
+        if voice_client.is_paused():
+            voice_client.resume()
+
+    def stop(self, voice_client):
+        if voice_client.is_playing() or voice_client.is_paused():
+            voice_client.stop()
+
+    async def change_volume(self, volume: float):
+        if self.voice_client and self.voice_client.is_playing():
+            # Stop the current audio and restart with the new volume
+            logger.info(f"Changing Volume to {volume}")
+            self.voice_client.stop()
+            # Hier verwenden wir den Link, der bereits abgespielt wird, um die Lautstärke zu ändern
+            self.source = discord.FFmpegPCMAudio(self.currentsongurl, **self.update_effects(volume))
+            self.voice_client.play(self.source)
+    
+    async def change_bass(self, bass:float):
+        if self.voice_client and self.voice_client.is_playing():
+            # Stop the current audio and restart with the new volume
+            logger.info(f"Changing bass to {bass}")
+            self.voice_client.stop()
+            # Hier verwenden wir den Link, der bereits abgespielt wird, um die Lautstärke zu ändern
+            self.source = discord.FFmpegPCMAudio(self.currentsongurl, **self.update_effects(bass))
+            self.voice_client.play(self.source)
+    
+    def update_effects(self, volume: float = None, bass: float = None, treble: float = None):
+        # Aktualisiere nur die angegebenen Effekte, ohne die anderen zu überschreiben
+        if volume is not None:
+            self.volume = volume
+        if bass is not None:
+            self.bassboost = bass
+        if treble is not None:
+            self.treble = treble
+
+        # Update die Effektkette, nur wenn Effekte nicht null oder Standardwert sind
+        effects = []
+
+        if self.volume != 0.25:
+            effects.append(f"volume={self.volume}")
+        if self.bassboost != 0.0:
+            effects.append(f"bass=g={self.bassboost}")
+        if self.treble != 0.0:
+            effects.append(f"treble=g={self.treble}")
+
+        # Verbinde alle Effekte in der Filterkette
+        self.effects_chain = ", ".join(effects)
+
+        return {
+            'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
+            'options': f'-vn -filter:a "{self.effects_chain}"'
+        }
+        
+        
+#######################
+#PLaylist
+####################### 
+    def is_empty(self):
+        return len(self.songs) == 0
+
+    def convert_duration_to_seconds(self, duration):
+        if isinstance(duration, int):
+            return duration
+        if isinstance(duration, str):
+            parts = duration.split(':')
+            if len(parts) == 2:  # mm:ss Format
+                minutes = int(parts[0])
+                seconds = int(parts[1])
+                return minutes * 60 + seconds
+            elif len(parts) == 3:  # hh:mm:ss Format
+                hours = int(parts[0])
+                minutes = int(parts[1])
+                seconds = int(parts[2])
+                return hours * 3600 + minutes * 60 + seconds
+            else:
+                raise ValueError("Invalid duration format")
+        raise TypeError("Duration must be a string or int")
+
+    def get_total_duration(self):
+        """Berechnet die Gesamtdauer in Sekunden und gibt sie als 'Minuten:Sekunden'-String zurück"""
+        total_seconds = sum(self.convert_duration_to_seconds(song['duration']) for song in self.songs)
+        return self.seconds_to_min_sec(total_seconds)
+
+    def seconds_to_min_sec(self, total_seconds):
+        """Konvertiert Sekunden in das Format 'Minuten:Sekunden'"""
+        minutes = total_seconds // 60
+        seconds = total_seconds % 60
+        return f"{minutes}:{seconds:02}"  # Stellt sicher, dass die Sekunden immer zweistellig sind
+

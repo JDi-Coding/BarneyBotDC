@@ -29,7 +29,12 @@ class BasicCog(commands.Cog):
     @discord.app_commands.command(name="baum", description="Der Baum hat grüne Blätter und einen braunen Stamm.", nsfw=False)
     async def baum(self, interaction: discord.Interaction):
         await interaction.response.send_message("Der Baum hat grüne Blätter und einen braunen Stamm.")
-        
+
+    @discord.app_commands.command(name="wer", description="Wer hat mich aufgerufen")
+    async def wer(self, interaction: discord.Interaction):
+        author = interaction.user
+        await interaction.response.send_message(f"Der Befehl wurde von {author.name} aufgerufen.")
+
     #Befehl um alle Verfügbaren SlashBefehle anzuzeigen
     @commands.command(
             help="hope it was helpfull : )",
