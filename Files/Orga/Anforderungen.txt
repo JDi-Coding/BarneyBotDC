@@ -1,0 +1,46 @@
+music_cog.py
+Der Bot soll Music von Youtube, Spotify und Andere Abspielen können
+Erstmal nur Youtube aber die anderen sachen sollen Einfach zu Implemtieren sein
+
+Wichtig hierbei ist das du darauf achtest das nix Gedownloaded wird.
+
+Der Nutzer soll einzelne videos von Youtube mit der URL oder den Normalen YT Link eingeben können
+Der Nutzer kann auch eine Ganze PLaylist einfügen mit dem Link zur PLaylist
+
+Die Erstellung der Verschieden Discord Embedd soll in einer Separaten Klasse Passieren Nennen wir sie DcEmbeddStyle
+
+in dieser Klasse soll die Funktionalität für die Erstellung der Verschiedene Embedds sein
+die Klasse soll in eine Separate Datei
+dafür habe ich einen Ordner erstellt Music dort befinded Sich schon eine Leere __init__.py
+
+Ich möchte das du in diesem music_cog.py
+Folgende App-Commands Integrierst:
+#Wichtig umbedingt Erstellen
+-/play (Setze das Angegebene Lied auf die PLaylist wenn eine PLaylist ist sollen Alle darin befinden Songs ausgelesen werden und ein die Playlist gesetzt werden)
+-/playlist (zeigt die Gesamte Playlist an als Discord Embedd)
+-/pause (pausiert die Wiedergabe)
+-/resume (Spielt wieder Weiter)
+-/stop (Bot Verlässt den Voicechannel und Löscht die Playlist und alle dazugehörigen Daten)
+
+#Zusatz kann auch später implementiert werden
+-/skip (Auswahl /skip = skipt den Aktuellen Song)
+/remove ( /remove [user] = Skipt alle songs die von diesem User hinzugefügt wurden und löscht sie aus der Playlist,
+ /remove [int] Löscht soviele songs aus der Playlist wie angeben wurden,
+  /remove [all] Löscht alle aus der PLaylist)
+-/loop (user darf auswählen ob die Gesamte playlist oder nur der aktuelle Song geloopt wird)
+
+#Zusatz Zusatz möglichkeit zur Implementation soll da sein soll aber Später gemacht werden
+-/volume (ändert die Lautstärke des Bots zwischen 0-200)
+-/bassboost (erhöht den Bass 0-100)
+-/nodupe (einstellung das alle Duplicates Entfernt)
+-/resetPLsets (stellt alle Einstellungen wie volume, bassboost, duplicate auf Standart)
+-/shuffle (Spielt alle Songs in der Playlist in Zufälliger Reihnfolge)
+-/invert (Spielt die Playlist rückwärts ab)
+-/back (Springt wieder zurück und spielt den Letzen Song ab)
+-/Skipto (Springt zur dem Angebenem Song)
+-/QC (Erzeugt ein Discord Embedd mit dem man die PLaylist Steuern kann)
+######################################################################################################
+
+Voice_cog.py
+
+-/playsound (Lade eine Audio Datei hoch die der Botabspielen soll)

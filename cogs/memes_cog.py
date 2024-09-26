@@ -27,60 +27,33 @@ class Memes(commands.Cog):
         # Sende das Meme als Datei
         return meme_path
 
+    MemeGroup = app_commands.Group(name="meme", description="Alles rund um memes")
 
-
-
-
-    @discord.app_commands.command(name="wow", description="Sendet ein wow GIF")
+    @MemeGroup.command(name="wow", description="Sendet ein wow GIF")
     async def wow(self, interaction: discord.Interaction):
         await interaction.response.send_message(content="Einfach nur wow:", file=discord.File('data/GIF/wow.gif'))
 
-    @discord.app_commands.command(name="what", description="Sendet ein what GIF")
+    @MemeGroup.command(name="what", description="Sendet ein what GIF")
     async def what(self, interaction: discord.Interaction):
         await interaction.response.send_message(content="what", file=discord.File('data/GIF/what.gif'))
  
-    @discord.app_commands.command(name="meme", description="Send a meme")
+    @MemeGroup.command(name="meme", description="Send a meme")
     async def meme(self, interaction: discord.Interaction):
         meme_path = self.getMemePath('data/Memes')
         # Sende das Meme als Datei
         await interaction.response.send_message(file=discord.File(meme_path))
     
-    @discord.app_commands.command(name="germanmeme", description="Sendet ein zufaelliges Deutsches Meme")
+    @MemeGroup.command(name="germanmeme", description="Sendet ein zufaelliges Deutsches Meme")
     async def germanmeme(self, interaction: discord.Interaction):
         meme_path = self.getMemePath('data/GerMemes')
         # Sende das Meme als Datei
         await interaction.response.send_message(file=discord.File(meme_path))
 
-    @discord.app_commands.command(name="offensivememe", description="sends a offensiv meme")
+    @MemeGroup.command(name="offensivememe", description="sends a offensiv meme")
     async def offensivmeme(self, interaction: discord.Interaction):
         meme_path = self.getMemePath('data/OffMemes')
         # Sende das Meme als Datei
         await interaction.response.send_message(file=discord.File(meme_path))
-
-
-
-
-    #Befehl um alle Verfügbaren SlashBefehle anzuzeigen
-    @commands.command(
-            help="hope it was helpfull : )",
-            description="this Command Shows every Slash-Command available in this Category. usage: [Prefix][Category]info",
-            brief="-> Shows every Slash-Command",
-            enabled=True, #Enables the Command or Disable the Command [TRUE/FALSE]
-            hidden=False #Hids the Command for !help altough !help ping shows still information [TRUE/FALSE]
-    )
-    async def MemeInfo(self, ctx):
-        # Alle /-Befehle des Bots
-        commands_list = self.bot.tree.get_commands()
-        # Filtere die Slash-Befehle, die zu dieser Klasse gehören
-        meme_commands = [cmd.name for cmd in commands_list if isinstance(cmd, app_commands.Command) and cmd.binding == self]
-
-        #Naricht mit allen Befehlen generieren
-        if meme_commands:
-            commands_str = "\n".join(f"/{cmd}" for cmd in meme_commands)
-            await ctx.send(f"Verfügbare Meme-Slash-Befehle:\n{commands_str}")
-        else:
-            await ctx.send("Es gibt keine slash Befehle in dieser Kategorie")
-
 
 async def setup(bot):
     await bot.add_cog(Memes(bot))

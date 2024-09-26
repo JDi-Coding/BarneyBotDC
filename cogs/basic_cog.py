@@ -11,31 +11,33 @@ class BasicCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(
-            help="hope it was helpfull : )",
-            description="Simple Ping Pong type [Prefix]Ping Bot Writes Pong and Tags you",
-            brief="-> Ping Pong Command",
-            enabled=True, #Enables the Command or Disable the Command [TRUE/FALSE]
-            hidden=False #Hids the Command for !help altough !help ping shows still information [TRUE/FALSE]
+
+
+   
+    basic = app_commands.Group(name="basic", description="Alle Basis Commands ohne Nutzen")
+    
+    @basic.command(
+        name="ping",
+        description="Pinge den Bot an",
+        nsfw=False
     )
-    async def Ping(self, ctx):
+    async def Ping(self, interaction: discord.Interaction):
         logger.info("Pinged")
-        await ctx.send("Pong!")
+        await interaction.response.send_message(f"Ping!", ephemeral=True)
 
-    #GUILD_ID = discord.Object(id=911273680301084753)
-    @discord.app_commands.command(name="hello", description="Sage Hallo zum Bot", nsfw=False)
+    @basic.command(name="hello", description="Sage Hallo zum Bot")
     async def hello(self, interaction: discord.Interaction):
-        await interaction.response.send_message(f"Hey {interaction.user.mention}!", ephemeral=True)
-
-    @discord.app_commands.command(name="say", description="Lässe den Bot was Sagen.", nsfw=False)
+            await interaction.response.send_message(f"Hey {interaction.user.mention}!", ephemeral=True)
+    
+    @basic.command(name="say", description="Lässe den Bot was Sagen.", nsfw=False)
     async def say(self, interaction: discord.Interaction, say: str):
         await interaction.response.send_message(f"User {interaction.user.mention} told me to say {say}")
 
-    @discord.app_commands.command(name="baum", description="Der Baum hat grüne Blätter und einen braunen Stamm.", nsfw=False)
+    @basic.command(name="baum", description="Der Baum hat grüne Blätter und einen braunen Stamm.", nsfw=False)
     async def baum(self, interaction: discord.Interaction):
         await interaction.response.send_message("Der Baum hat grüne Blätter und einen braunen Stamm.")
 
-    @discord.app_commands.command(name="wer", description="Wer hat mich aufgerufen")
+    @basic.command(name="wer", description="Wer hat mich aufgerufen")
     async def wer(self, interaction: discord.Interaction):
         author = interaction.user
         await interaction.response.send_message(f"Der Befehl wurde von {author.name} aufgerufen.")
@@ -52,14 +54,15 @@ class BasicCog(commands.Cog):
         # Alle /-Befehle des Bots
         commands_list = self.bot.tree.get_commands()
         # Filtere die Slash-Befehle, die zu dieser Klasse gehören
-        meme_commands = [cmd.name for cmd in commands_list if isinstance(cmd, app_commands.Command) and cmd.binding == self]
+        basic_commands = [cmd.name for cmd in commands_list if isinstance(cmd, app_commands.Command) and cmd.binding == self]
 
         #Naricht mit allen Befehlen generieren
-        if meme_commands:
-            commands_str = "\n".join(f"/{cmd}" for cmd in meme_commands)
+        if basic_commands:
+            commands_str = "\n".join(f"/{cmd}" for cmd in basic_commands)
             await ctx.send(f"Verfügbare Basic-Slash-Befehle:\n{commands_str}")
         else:
             await ctx.send("Es gibt keine slash Befehle in dieser Kategorie")
+        
 
 
 

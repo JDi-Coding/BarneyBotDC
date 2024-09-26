@@ -42,10 +42,11 @@ class TempVoice(commands.Cog):
                     await before.channel.delete()
                     logger.info("Deleting "+ member.nick + " temp_Channel")
                     del self.temp_channels[before.channel.id]
-                    
+
+    TempVoiceGroup = app_commands.Group(name="tempvoice", description="commands fuer den tempvoice channel")                   
 
     # Slash-Befehl zum Ändern des Channel-Namens
-    @discord.app_commands.command(name="channelname", description="Ändert den Namen des temporären Voice-Channels.")
+    @TempVoiceGroup.command(name="channelname", description="Ändert den Namen des temporären Voice-Channels.")
     async def channelname(self, interaction: discord.Interaction, name: str):
         # Prüfen, ob der Nutzer einen temporären Channel besitzt
         if interaction.user.voice and interaction.user.voice.channel.id in self.temp_channels:
@@ -60,7 +61,7 @@ class TempVoice(commands.Cog):
             await interaction.response.send_message("Du bist nicht in einem temporären Channel.", ephemeral=True)
 
     # Slash-Befehl zum Ändern der Bitrate des Channels
-    @discord.app_commands.command(name="bitrate", description="Ändert die Bitrate des temporären Voice-Channels.")
+    @TempVoiceGroup.command(name="bitrate", description="Ändert die Bitrate des temporären Voice-Channels.")
     async def bitrate(self, interaction: discord.Interaction, bitrate: int):
         if interaction.user.voice and interaction.user.voice.channel.id in self.temp_channels:
             temp_channel = interaction.user.voice.channel
@@ -77,7 +78,7 @@ class TempVoice(commands.Cog):
             await interaction.response.send_message("Du bist nicht in einem temporären Channel.", ephemeral=True)
 
     # Slash-Befehl zum Setzen der maximalen Benutzerzahl
-    @discord.app_commands.command(name="maxuser", description="Ändert die maximale Benutzeranzahl im temporären Voice-Channel.")
+    @TempVoiceGroup.command(name="maxuser", description="Ändert die maximale Benutzeranzahl im temporären Voice-Channel.")
     async def maxuser(self, interaction: discord.Interaction, max_users: int):
         if interaction.user.voice and interaction.user.voice.channel.id in self.temp_channels:
             temp_channel = interaction.user.voice.channel
@@ -91,27 +92,6 @@ class TempVoice(commands.Cog):
                 await interaction.response.send_message("Nur der Ersteller kann den Channel anpassen.", ephemeral=True)
         else:
             await interaction.response.send_message("Du bist nicht in einem temporären Channel.", ephemeral=True)
-
-    #Befehl um alle Verfügbaren SlashBefehle anzuzeigen
-    @commands.command(
-            help="hope it was helpfull : )",
-            description="this Command Shows every Slash-Command available in this Category. usage: [Prefix][Category]info",
-            brief="-> Shows every Slash-Command",
-            enabled=True, #Enables the Command or Disable the Command [TRUE/FALSE]
-            hidden=False #Hids the Command for !help altough !help ping shows still information [TRUE/FALSE]
-    )
-    async def TempVCInfo(self, ctx):
-        # Alle /-Befehle des Bots
-        commands_list = self.bot.tree.get_commands()
-        # Filtere die Slash-Befehle, die zu dieser Klasse gehören
-        meme_commands = [cmd.name for cmd in commands_list if isinstance(cmd, app_commands.Command) and cmd.binding == self]
-
-        #Naricht mit allen Befehlen generieren
-        if meme_commands:
-            commands_str = "\n".join(f"/{cmd}" for cmd in meme_commands)
-            await ctx.send(f"Verfügbare Temp-Slash-Befehle:\n{commands_str}")
-        else:
-            await ctx.send("Es gibt keine slash Befehle in dieser Kategorie")
 
 
 async def setup(bot):
