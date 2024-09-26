@@ -6,13 +6,15 @@ from discord import app_commands
 import os
 import logging
 import asyncio
+from colorama import Fore, Back, Style, init
+from gtts import gTTS
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from config.config import TOKEN, COMMAND_PREFIX, PREMIUM_GUILD_IDS, TEST_GUILD_IDS  # GUILD_ID importieren
 from config.settings import LOGGING_CONFIG
 import logging.config
 ###################################################################################
-
+init(autoreset=True) 
 # Logging konfigurieren
 logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger('bot')
@@ -32,7 +34,7 @@ observer = Observer()
 class MyHandler(FileSystemEventHandler):
     def on_modified(self, event):
         if event.src_path.endswith('.py'):
-            logger.info(f"Change detected in {event.src_path}, reloading cogs...")
+            #logger.info(f"Change detected in {event.src_path}, reloading cogs...")
             asyncio.run_coroutine_threadsafe(reload_cogs(), bot.loop)
 
 ###################################################################################
@@ -42,7 +44,7 @@ async def load_cogs():
     for filename in os.listdir('./cogs'):
         if filename.endswith('.py'):
             await bot.load_extension(f'cogs.{filename[:-3]}')
-            logger.info(f"Module {filename} loaded.")
+            #logger.info(f"Module {filename} loaded.")
 
 ###################################################################################
 
@@ -52,14 +54,13 @@ async def reload_cogs():
         if filename.endswith('.py'):
             await bot.unload_extension(f'cogs.{filename[:-3]}')
             await bot.load_extension(f'cogs.{filename[:-3]}')
-            logger.info(f"Module {filename} reloaded.")
-
+            #logger.info(f"Module {filename} reloaded.")
 ###################################################################################
 
 #Synchronisiert Globale App-Commands
 async def sync_global():
         synced = await bot.tree.sync()
-        logger.info(f"Synced {len(synced)} Global Command(s)")
+        #logger.info(f"Synced {len(synced)} Global Command(s)")
         return len(synced)
 
 ###################################################################################
@@ -72,7 +73,7 @@ async def sync_test_guilds():
         if guild is not None:
             synced = await bot.tree.sync(guild=guild)
             total_synced += len(synced)
-            logger.info(f"Synced {len(synced)} Command(s) for Test Guild: {guild.name} (ID: {guild.id})")
+            #logger.info(f"Synced {len(synced)} Command(s) for Test Guild: {guild.name} (ID: {guild.id})")
         else:
             logger.warning(f"Test Guild ID {TEST_GUILD_ID} not found!")
     return total_synced
@@ -87,7 +88,7 @@ async def sync_premium_guilds():
         if guild is not None:
             synced = await bot.tree.sync(guild=guild)
             total_synced += len(synced)
-            logger.info(f"Synced {len(synced)} Command(s) for Premium Guild {guild.name} (ID: {guild.id})")
+            #logger.info(f"Synced {len(synced)} Command(s) for Premium Guild {guild.name} (ID: {guild.id})")
         else:
             logger.warning(f"Premium Guild ID {PREMIUM_GUILD_ID} not found!")
     return total_synced
@@ -119,21 +120,29 @@ async def on_ready():
         await load_cogs()  # Cogs laden
     except Exception as e:
         logger.error(e)
-    logger.info("Cogs Geladen")
+    logger.info(Style.BRIGHT +"Cogs Geladen")
     try:
         await Start_Sync()
     except Exception as e:
         logger.error(e)
-    logger.info("Commands mit Guilds Gesynced")
+      
+    logger.info(Style.BRIGHT +"Commands mit Guilds Gesynced")
+    print(" ")
+    print("----------------------------")
+    print(Style.BRIGHT + Fore.RED + "############################")
+    print(Fore.BLUE +f'{bot.user.name} ist online!')
+    print(Style.BRIGHT + Fore.RED +  "############################")
+    print("----------------------------")
+    print(" ")
     
-    print(" ")
-    print("----------------------------")
-    print("############################")
-    print(f'{bot.user.name} ist online!')
-    print("############################")
-    print("----------------------------")
-    print(" ")
-
+@bot.command()
+async def speak(ctx, *, text: str):
+    if ctx.voice_client:
+        tts = gTTS(text=text, lang='en')
+        tts.save("tts.mp3")
+        ctx.voice_client.play(discord.FFmpegPCMAudio("tts.mp3"), after=lambda e: os.remove("tts.mp3"))
+    else:
+        await ctx.send("I need to be in a voice channel to speak.")
 ###################################################################################
 
 try:

@@ -35,3 +35,9 @@ async def setup(bot):
     async def (self, interaction: discord.Interaction):
 
 - Für Slash Commands nach def den Funktionsnamen eingeben
+
+# ffmpeg
+FFMPEG_OPTIONS = {
+    'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
+    'options': '-vn -filter:a "volume=0.25, bass=g=0.0, treble=g=0.0"'
+}
