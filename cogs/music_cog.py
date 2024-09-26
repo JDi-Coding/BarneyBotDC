@@ -6,7 +6,7 @@ from cogs.Music.playlist_embed import PlaylistEmbed
 import logging
 from config.settings import LOGGING_CONFIG
 logging.config.dictConfig(LOGGING_CONFIG)
-logger = logging.getLogger('bot')
+logger = logging.getLogger('music')
 
 class Music(commands.Cog):
     def __init__(self, bot):

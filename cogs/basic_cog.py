@@ -5,7 +5,7 @@ from discord import app_commands
 import logging
 from config.settings import LOGGING_CONFIG
 logging.config.dictConfig(LOGGING_CONFIG)
-logger = logging.getLogger('bot')
+logger = logging.getLogger('basic')
 
 class BasicCog(commands.Cog):
     def __init__(self, bot):
@@ -19,6 +19,7 @@ class BasicCog(commands.Cog):
             hidden=False #Hids the Command for !help altough !help ping shows still information [TRUE/FALSE]
     )
     async def Ping(self, ctx):
+        logger.info("Pinged")
         await ctx.send("Pong!")
 
     #GUILD_ID = discord.Object(id=911273680301084753)

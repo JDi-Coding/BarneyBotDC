@@ -9,10 +9,7 @@ from watchdog.events import FileSystemEventHandler
 import logging
 from config.settings import LOGGING_CONFIG
 logging.config.dictConfig(LOGGING_CONFIG)
-logger = logging.getLogger('bot')
-
-logger = logging.getLogger('bot')
-
+logger = logging.getLogger('monitor')
 class MyHandler(FileSystemEventHandler):
     def __init__(self, bot):
         self.bot = bot

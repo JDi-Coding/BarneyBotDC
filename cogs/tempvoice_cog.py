@@ -5,7 +5,7 @@ from discord import app_commands
 import logging
 from config.settings import LOGGING_CONFIG
 logging.config.dictConfig(LOGGING_CONFIG)
-logger = logging.getLogger('bot')
+logger = logging.getLogger('tempvoice')
 class TempVoice(commands.Cog):
     # Speichert die IDs der temporären Channels und deren Ersteller
     def __init__(self, bot):

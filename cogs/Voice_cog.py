@@ -6,7 +6,7 @@ import yt_dlp
 import logging
 from config.settings import LOGGING_CONFIG
 logging.config.dictConfig(LOGGING_CONFIG)
-logger = logging.getLogger('bot')
+logger = logging.getLogger('voice')
 class Voice(commands.Cog):
     def __init__(self, bot):
         self.bot = bot

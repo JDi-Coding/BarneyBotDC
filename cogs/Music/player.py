@@ -8,7 +8,7 @@ import re
 import logging
 from config.settings import LOGGING_CONFIG
 logging.config.dictConfig(LOGGING_CONFIG)
-logger = logging.getLogger('bot')
+logger = logging.getLogger('player')
 
 class Player:
     def __init__(self, bot):
