@@ -1,4 +1,8 @@
 import discord
+import logging
+from config.settings import LOGGING_CONFIG
+logging.config.dictConfig(LOGGING_CONFIG)
+logger = logging.getLogger('bot')
 
 class PlaylistEmbed:
     def __init__(self, playlist):

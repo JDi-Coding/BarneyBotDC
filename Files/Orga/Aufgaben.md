@@ -54,3 +54,5 @@ Der Bot soll Musik von YouTube, Spotify und anderen Plattformen abspielen könne
   - Springt zum angegebenen Song.
 - `/QC` 
   - Erzeugt ein Discord Embed, mit dem man die Playlist steuern kann.
+- `/save`
+  - Speichert die Akteulle Playlist in einer Datenbank

@@ -5,7 +5,10 @@ from discord import app_commands
 from config.config import TEST_GUILD_IDS
 from config.utils import has_premium_access
 from cogs.test.test import test_function_1, test_function_2
-
+import logging
+from config.settings import LOGGING_CONFIG
+logging.config.dictConfig(LOGGING_CONFIG)
+logger = logging.getLogger('bot')
 class TestCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot

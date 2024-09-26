@@ -4,6 +4,8 @@ from discord import app_commands
 from cogs.Music.player import Player
 from cogs.Music.playlist_embed import PlaylistEmbed
 import logging
+from config.settings import LOGGING_CONFIG
+logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger('bot')
 
 class Music(commands.Cog):
@@ -12,6 +14,14 @@ class Music(commands.Cog):
         self.voice_clients = {}
         self.player = Player(bot)  # Player-Instanz bleibt
 
+    def convert_to_float(self, value: str) -> float:
+        """Hilfsfunktion, um Komma in Punkt zu ändern und String in Float umzuwandeln."""
+        value = value.replace(',', '.')  # Ersetze Komma mit Punkt
+        try:
+            return float(value)  # Konvertiere zu Float
+        except ValueError:
+            raise ValueError(f"Cannot convert '{value}' to float")
+        
     @app_commands.command(name="play", description="Play a song from a YouTube link.")
     async def play(self, interaction: discord.Interaction, link: str):
         # Check if the user is in a voice channel
@@ -85,17 +95,45 @@ class Music(commands.Cog):
         await interaction.response.send_message("removed", ephemeral=True) 
    
     @app_commands.command(name="volume", description="Setzt die Lautstärke")
-    async def volume(self, interaction: discord.interactions, volume: float):
-        #if 0.0 <= volume <= 2.0:  # Lautstärke zwischen 0 und 2 (0% - 200%)
-            await self.player.change_volume(volume)
-            await interaction.response.send_message(f"Volume changed to {volume}")
-        #else:
-        #    await interaction.response.send_message("Volume must be between 0 and 2.")
+    async def volume(self, interaction: discord.Interaction, volume: str):
+        try:
+            volume_float = self.convert_to_float(volume)            
+            # Überprüfe, ob der Wert im gültigen Bereich liegt
+            if 0.0 <= volume_float <= 3.0:
+                await self.player.change_volume(volume_float)  # Lautstärke ändern
+                await interaction.response.send_message(f"Volume changed to {volume_float}", ephemeral=True)
+            else:
+                await interaction.response.send_message("Volume must be between 0 and 3.", ephemeral=True)
+        except ValueError as e:
+            logger.error(str(e))
+            await interaction.response.send_message("Wert muss Zwischen 0.01 und 3.0 sein", ephemeral=True)
   
-    @app_commands.command(name="bassboost", description="setzt den bassboost")
-    async def bassboost(self, interaction: discord.interactions, bass: float):
-            await self.player.change_bass(bass)
-            await interaction.response.send_message(f"Volume changed to {bass}")
+    @app_commands.command(name="bass", description="Boosted den bass nutze bitte , statt .")
+    async def bass(self, interaction: discord.interactions, bass: float):
+        try:
+            bass_float = self.convert_to_float(bass)            
+            # Überprüfe, ob der Wert im gültigen Bereich liegt
+            if 0.0 <= bass_float <= 3.0:
+                await self.player.change_volume(bass_float)  # Lautstärke ändern
+                await interaction.response.send_message(f"Bss changed to {bass_float}", ephemeral=True)
+            else:
+                await interaction.response.send_message("Bass must be between 0 and 3.", ephemeral=True)
+        except ValueError as e:
+            logger.error(str(e))
+            await interaction.response.send_message("Wert muss Zwischen 0.01 und 3.0 sein", ephemeral=True)
+    @app_commands.command(name="treble", description="veraendere den treble")  
+    async def treble(self, interaction: discord.interactions, bass: float):
+        try:
+            treble_float = self.convert_to_float(bass)            
+            # Überprüfe, ob der Wert im gültigen Bereich liegt
+            if 0.0 <= treble_float <= 3.0:
+                await self.player.change_volume(treble_float)  # Lautstärke ändern
+                await interaction.response.send_message(f"treble changed to {treble_float}", ephemeral=True)
+            else:
+                await interaction.response.send_message("treble must be between 0 and 3.", ephemeral=True)
+        except ValueError as e:
+            logger.error(str(e))
+            await interaction.response.send_message("Wert muss Zwischen 0.01 und 3.0 sein", ephemeral=True)
         
     @app_commands.command(name="nodupe", description="Entfernt alle Duplikate")
     async def nodupe(self, interaction: discord.interactions):

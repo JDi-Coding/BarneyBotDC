@@ -6,6 +6,8 @@ import asyncio
 from concurrent.futures import ThreadPoolExecutor
 import re
 import logging
+from config.settings import LOGGING_CONFIG
+logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger('bot')
 
 class Player:
@@ -16,18 +18,14 @@ class Player:
         self.source = None
         self.defaultvolume = 0.25
         self.volume = 0.25
-        self.defaultbassboost = 0.0
-        self.bassboost = 0.0
+        self.defaultbass = 0.0
+        self.bass = 0.0
         self.defaulttreble = 0.0
-        self.treble = 0.0     
-        self.defaultffmpeg_options = {
-            'before_options': f'-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
-            'options': f'-vn -filter:a "volume={self.defaultvolume}, bass=g={self.defaultbassboost}, treble=g={self.defaulttreble}"'
-        }
+        self.treble = 0.0
         self.ffmpeg_options = {
             'before_options': f'-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
-            'options': f'-vn -filter:a "volume={self.volume}, bass=g={self.bassboost}, treble=g={self.treble}"'
-        }      
+            'options': f'-vn -filter:a "volume={self.volume}, bass=g={self.bass}, treble=g={self.treble}"'
+        }
         self.is_playing = False
         self.songs = []  # Warteschlange für Songs
         self.playlist = [] #Playlist zum hin und her Navigieren
@@ -199,45 +197,67 @@ class Player:
             logger.info(f"Changing Volume to {volume}")
             self.voice_client.stop()
             # Hier verwenden wir den Link, der bereits abgespielt wird, um die Lautstärke zu ändern
-            self.source = discord.FFmpegPCMAudio(self.currentsongurl, **self.update_effects(volume))
+            self.source = discord.FFmpegPCMAudio(self.currentsongurl, **self.update_effects(volume=volume))
             self.voice_client.play(self.source)
     
     async def change_bass(self, bass:float):
         if self.voice_client and self.voice_client.is_playing():
-            # Stop the current audio and restart with the new volume
+            # Stop the current audio and restart with the new bass
             logger.info(f"Changing bass to {bass}")
             self.voice_client.stop()
-            # Hier verwenden wir den Link, der bereits abgespielt wird, um die Lautstärke zu ändern
-            self.source = discord.FFmpegPCMAudio(self.currentsongurl, **self.update_effects(bass))
+            #bass ändern
+            self.source = discord.FFmpegPCMAudio(self.currentsongurl, **self.update_effects(bass=bass))
             self.voice_client.play(self.source)
-    
+
+    async def reset_pl_effects(self):
+        if self.voice_client and self.voice_client.is_playing():
+            # Stop the current audio and restart with the new volume
+            logger.info(f"Reseting Playlist Effects")
+            self.voice_client.stop()
+            # Hier verwenden wir den Link, der bereits abgespielt wird, um die Lautstärke zu ändern
+            self.source = discord.FFmpegPCMAudio(self.currentsongurl, **self.update_effects())
+            self.voice_client.play(self.source)
+   
     def update_effects(self, volume: float = None, bass: float = None, treble: float = None):
-        # Aktualisiere nur die angegebenen Effekte, ohne die anderen zu überschreiben
-        if volume is not None:
-            self.volume = volume
-        if bass is not None:
-            self.bassboost = bass
-        if treble is not None:
-            self.treble = treble
-
-        # Update die Effektkette, nur wenn Effekte nicht null oder Standardwert sind
+        # Update die Effektkette
         effects = []
-
-        if self.volume != 0.25:
+        if volume is None and bass is None and treble is None:
+            #Resete alles
+            logger.info("Reset Audio Effects")
+            self.volume = self.defaultvolume
+            self.bass = self.defaultbass
+            self.treble = self.defaulttreble
             effects.append(f"volume={self.volume}")
-        if self.bassboost != 0.0:
-            effects.append(f"bass=g={self.bassboost}")
-        if self.treble != 0.0:
+            effects.append(f"bass=g={self.bass}")
             effects.append(f"treble=g={self.treble}")
-
+        else:
+            # Aktualisiere die Effecte
+            if volume is not None:
+                self.volume = volume
+                logger.info(f"Setting Volume to {self.volume}")
+            if bass is not None:
+                self.bass = bass
+                logger.info(f"Setting Bass to {self.bass}")
+            if treble is not None:
+                self.treble = treble
+                logger.info(f"Setting Volume to {self.treble}")     
+            #Hinzufügen wenn nicht Standart
+            if self.volume != 0.25:
+                effects.append(f"volume={self.volume}")
+            if self.bass != 0.0:
+                effects.append(f"bass=g={self.bass}")
+            if self.treble != 0.0:
+                effects.append(f"treble=g={self.treble}")
         # Verbinde alle Effekte in der Filterkette
         self.effects_chain = ", ".join(effects)
-
-        return {
+        logger.info(f"Updatet effect Chain: {self.effects_chain}")      
+        MpegefectOptions = {
             'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
             'options': f'-vn -filter:a "{self.effects_chain}"'
         }
-        
+        print(MpegefectOptions)
+        return MpegefectOptions
+            
         
 #######################
 #PLaylist

@@ -4,6 +4,10 @@ from discord.ext import commands
 from discord import app_commands
 import os
 import random
+import logging
+from config.settings import LOGGING_CONFIG
+logging.config.dictConfig(LOGGING_CONFIG)
+logger = logging.getLogger('bot')
 
 class Memes(commands.Cog):
     def __init__(self, bot):

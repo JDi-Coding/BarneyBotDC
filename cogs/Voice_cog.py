@@ -3,7 +3,10 @@ from discord.ext import commands
 from discord import ui, ButtonStyle
 import asyncio
 import yt_dlp
-
+import logging
+from config.settings import LOGGING_CONFIG
+logging.config.dictConfig(LOGGING_CONFIG)
+logger = logging.getLogger('bot')
 class Voice(commands.Cog):
     def __init__(self, bot):
         self.bot = bot

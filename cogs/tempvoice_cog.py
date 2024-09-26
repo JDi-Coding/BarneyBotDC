@@ -2,7 +2,9 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-import logging.config
+import logging
+from config.settings import LOGGING_CONFIG
+logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger('bot')
 class TempVoice(commands.Cog):
     # Speichert die IDs der temporären Channels und deren Ersteller

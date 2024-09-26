@@ -2,6 +2,10 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
+import logging
+from config.settings import LOGGING_CONFIG
+logging.config.dictConfig(LOGGING_CONFIG)
+logger = logging.getLogger('bot')
 
 class BasicCog(commands.Cog):
     def __init__(self, bot):

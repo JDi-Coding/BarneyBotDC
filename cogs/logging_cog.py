@@ -1,6 +1,8 @@
 # logging_cog.py
 import os
 import logging
+from config.settings import LOGGING_CONFIG
+logging.config.dictConfig(LOGGING_CONFIG)
 from discord.ext import commands
 
 class LoggingCog(commands.Cog):
