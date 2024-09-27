@@ -4,7 +4,9 @@ from discord import app_commands
 import asyncio
 from gtts import gTTS
 import os
-
+from moviepy.editor import VideoFileClip
+import yt_dlp
+from discord.ext import commands
 class Voice(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -112,6 +114,26 @@ class Voice(commands.Cog):
         await vc.disconnect()
         os.remove(file_path)
         await interaction.response.send_message("Audio wird Abgespielt")
+
+    @VoiceGroup.command(name="upload_video", description="Sende den Link für ein Video Achtung dauert laenger")
+    async def upload_video(self, interaction: discord.Interaction, video_file: discord.Attachment):
+        try:
+            file_path = f"C:/Users/Anwender/Desktop/Projekte/Selfbot/StreamBot/videos/{video_file.filename}"
+            await video_file.save(file_path)
+            await interaction.response.defer(thinking=True, ephemeral=True)
+            # Video laden und Informationen extrahieren
+            clip = VideoFileClip(file_path)
+            video_title = video_file.filename
+            video_duration = clip.duration
+            print(video_title)
+            print(video_duration)
+        except Exception as e:
+            await interaction.followup.send(f"Hat nich geklapt {e}", ephemeral=True)
+        finally:
+            video_title = os.path.splitext(video_file.filename)[0]           
+            await interaction.followup.send(f"Geklapt! Titel: {video_title}, Dauer: {video_duration} Sekunden", ephemeral=True)
+            await interaction.followup.send(f"Fehler beim Ausführen des Befehls", ephemeral=True)
+            await interaction.followup.send(f"$play {video_title}")
 
 
 # Add the cog to the bot
