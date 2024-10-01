@@ -1,18 +1,20 @@
 # bot.py
 import discord
 from discord.ext import commands
-from discord import app_commands
+#from discord import app_commands
 
 import os
-import logging
+#import logging
 import asyncio
-from colorama import Fore, Back, Style, init
+from colorama import Fore, Style, init
 from gtts import gTTS
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from config.config import TOKEN, COMMAND_PREFIX, PREMIUM_GUILD_IDS, TEST_GUILD_IDS  # GUILD_ID importieren
 from config.settings import LOGGING_CONFIG
 import logging.config
+import sys
+sys.stdout.reconfigure(encoding='utf-8')
 ###################################################################################
 init(autoreset=True) 
 # Logging konfigurieren
@@ -96,7 +98,7 @@ async def sync_premium_guilds():
 ###################################################################################
 
 #Synchronisiert die App-Commands mit allen anderen Guilds.
-async def Start_Sync():
+async def start_sync():
     global_sync_count = await sync_global()
     test_sync_count = await sync_test_guilds()
     premium_sync_count = await sync_premium_guilds()
@@ -118,15 +120,15 @@ async def on_ready():
     logger.info("Started watching for file changes...")
     try:
         await load_cogs()  # Cogs laden
-    except Exception as e:
-        logger.error(e)
+    except Exception as exceptions:
+        logger.error(exceptions)
     logger.info(Style.BRIGHT +"Cogs Geladen")
     try:
-        await Start_Sync()
-    except Exception as e:
-        logger.error(e)
+        await start_sync()
+    except Exception as exceptions:
+        logger.error(exceptions)
       
-    logger.info(Style.BRIGHT +"Commands mit Guilds Gesynced")
+    logger.info(Style.BRIGHT +"Commands mit Guilds Ge synced")
     print(" ")
     print("----------------------------")
     print(Style.BRIGHT + Fore.RED + "############################")
@@ -140,7 +142,7 @@ async def speak(ctx, *, text: str):
     if ctx.voice_client:
         tts = gTTS(text=text, lang='en')
         tts.save("tts.mp3")
-        ctx.voice_client.play(discord.FFmpegPCMAudio("tts.mp3"), after=lambda e: os.remove("tts.mp3"))
+        ctx.voice_client.play(discord.FFmpegPCMAudio("tts.mp3"), after=lambda exception: os.remove("tts.mp3"))
     else:
         await ctx.send("I need to be in a voice channel to speak.")
 ###################################################################################

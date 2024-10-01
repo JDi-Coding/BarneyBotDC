@@ -161,7 +161,7 @@ class TestCog(commands.Cog):
            await interaction.response.send_message(str(e))                
     # Test-Command als TextCommand für Test- und Premium-Guilds
     @commands.command()
-    async def test_Text_1(self, ctx):
+    async def test_text_1(self, ctx):
         guild_id = ctx.guild.id
         if has_premium_access(guild_id):
             await ctx.send("Du hast Zugriff auf das Premium-Text-Feature!")

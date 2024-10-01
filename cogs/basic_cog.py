@@ -21,7 +21,7 @@ class BasicCog(commands.Cog):
         description="Pinge den Bot an",
         nsfw=False
     )
-    async def Ping(self, interaction: discord.Interaction):
+    async def ping(self, interaction: discord.Interaction):
         logger.info("Pinged")
         await interaction.response.send_message(f"Ping!", ephemeral=True)
 
@@ -50,7 +50,7 @@ class BasicCog(commands.Cog):
             enabled=True, #Enables the Command or Disable the Command [TRUE/FALSE]
             hidden=False #Hids the Command for !help altough !help ping shows still information [TRUE/FALSE]
     )
-    async def BasicInfo(self, ctx):
+    async def basicinfo(self, ctx):
         # Alle /-Befehle des Bots
         commands_list = self.bot.tree.get_commands()
         # Filtere die Slash-Befehle, die zu dieser Klasse gehören

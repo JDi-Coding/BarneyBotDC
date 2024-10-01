@@ -9,23 +9,25 @@ from config.settings import LOGGING_CONFIG
 logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger('memes')
 
+
+def get_meme_path(meme_dir: str):
+    # Verzeichnis mit den Memes
+    #meme_dir = 'data/Memes'
+    # Liste alle Dateien im Verzeichnis auf
+    all_files = os.listdir(meme_dir)
+    # Filtere nur Bilder (du kannst Dateiendungen anpassen, falls nötig)
+    meme_files = [file for file in all_files if file.endswith(('.png', '.jpg', '.jpeg', '.gif'))]
+    # Wähle ein zufälliges Meme aus
+    selected_meme = random.choice(meme_files)
+    # Erstelle den vollständigen Pfad zur ausgewählten Datei
+    meme_path = os.path.join(meme_dir, selected_meme)
+    # Sende das Meme als Datei
+    return meme_path
+
+
 class Memes(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
-    def getMemePath(self, meme_dir: str):
-        # Verzeichnis mit den Memes
-        #meme_dir = 'data/Memes'
-        # Liste alle Dateien im Verzeichnis auf
-        all_files = os.listdir(meme_dir)
-        # Filtere nur Bilder (du kannst Dateiendungen anpassen, falls nötig)
-        meme_files = [file for file in all_files if file.endswith(('.png', '.jpg', '.jpeg', '.gif'))]
-        # Wähle ein zufälliges Meme aus
-        selected_meme = random.choice(meme_files)
-        # Erstelle den vollständigen Pfad zur ausgewählten Datei
-        meme_path = os.path.join(meme_dir, selected_meme)
-        # Sende das Meme als Datei
-        return meme_path
 
     MemeGroup = app_commands.Group(name="meme", description="Alles rund um memes")
 
@@ -39,19 +41,19 @@ class Memes(commands.Cog):
  
     @MemeGroup.command(name="meme", description="Send a meme")
     async def meme(self, interaction: discord.Interaction):
-        meme_path = self.getMemePath('data/Memes')
+        meme_path = get_meme_path('data/Memes')
         # Sende das Meme als Datei
         await interaction.response.send_message(file=discord.File(meme_path))
     
     @MemeGroup.command(name="germanmeme", description="Sendet ein zufaelliges Deutsches Meme")
     async def germanmeme(self, interaction: discord.Interaction):
-        meme_path = self.getMemePath('data/GerMemes')
+        meme_path = get_meme_path('data/GerMemes')
         # Sende das Meme als Datei
         await interaction.response.send_message(file=discord.File(meme_path))
 
     @MemeGroup.command(name="offensivememe", description="sends a offensiv meme")
     async def offensivmeme(self, interaction: discord.Interaction):
-        meme_path = self.getMemePath('data/OffMemes')
+        meme_path = get_meme_path('data/OffMemes')
         # Sende das Meme als Datei
         await interaction.response.send_message(file=discord.File(meme_path))
 

@@ -49,7 +49,7 @@ class Voice(commands.Cog):
     @VoiceGroup.command(name="leave", description="Leave the voice channel.")
     async def leave(self, interaction: discord.Interaction):
         if interaction.guild.voice_client:
-            await interaction.guild.voice_client.disconnect()
+            await interaction.guild.voice_client.disconnect(force=True)
             await interaction.response.send_message("Disconnected from the voice channel.", ephemeral=True)
         else:
             await interaction.response.send_message("I'm not in a voice channel.", ephemeral=True)

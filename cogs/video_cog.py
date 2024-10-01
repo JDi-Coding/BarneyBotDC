@@ -32,7 +32,7 @@ class VideoCog(commands.Cog):
                     # Video von der URL herunterladen
                     await interaction.response.send_message("Video wird heruntergeladen, bitte warten...", ephemeral=True)
                     # Definiere den Download-Pfad
-                    download_dir = "C:/Users/Anwender/Desktop/Projekte/Selfbot/StreamBot/videos"
+                    download_dir = "E:/Projekte/discordprojects/SelfBot/StreamBot/videos"
                     if not os.path.exists(download_dir):
                         os.makedirs(download_dir)
                     

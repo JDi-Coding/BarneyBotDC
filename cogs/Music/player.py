@@ -2,7 +2,7 @@ import discord
 import yt_dlp
 import urllib.parse
 from pytube import Playlist as PytubePlaylist
-import asyncio
+#import asyncio
 from concurrent.futures import ThreadPoolExecutor
 import re
 import logging
@@ -16,11 +16,11 @@ class Player:
         self.youtube_base_url = 'https://www.youtube.com/'
         self.voice_client = None
         self.source = None
-        self.defaultvolume = 0.25
+        self.default_volume = 0.25
         self.volume = 0.25
-        self.defaultbass = 0.0
+        self.default_bass = 0.0
         self.bass = 0.0
-        self.defaulttreble = 0.0
+        self.default_treble = 0.0
         self.treble = 0.0
         self.ffmpeg_options = {
             'before_options': f'-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
@@ -28,11 +28,11 @@ class Player:
         }
         self.is_playing = False
         self.songs = []  # Warteschlange für Songs
-        self.playlist = [] #Playlist zum hin und her Navigieren
+        self.playlist = [] #Playlist zum Hin und Her Navigieren
         self.current_index = -1  # -1 bedeutet, dass kein Song aktuell gespielt wird
         self.executor = ThreadPoolExecutor(max_workers=5)
         self.current_song = -1 # -1 = kein Current song
-        self.currentsongurl = None
+        self.current_song_url = None
         self.effects_chain = ""
 
     async def play(self, voice_client, link: str, added_by: str):
@@ -48,8 +48,8 @@ class Player:
                     cleanurl = self.normalize_youtube_url(url)
                     data = await self.bot.loop.run_in_executor(None, lambda: self.extract_video_info(cleanurl))
                     title, song_url, duration, thumbnail = data
-                    convertedduration = self.convert_seconds_to_duration(duration)
-                    self.add_song(title, song_url, cleanurl, convertedduration, thumbnail, added_by)
+                    converted_duration = self.convert_seconds_to_duration(duration)
+                    self.add_song(title, song_url, cleanurl, converted_duration, thumbnail, added_by)
                     logger.info(f"Song hinzugefügt: {title}, Dauer: {duration}")
                 if not self.is_playing:
                     await self.play_next(voice_client)
@@ -59,8 +59,8 @@ class Player:
             try:
                 data = await self.bot.loop.run_in_executor(None, lambda: self.extract_video_info(link))
                 title, song_url, duration, thumbnail = data
-                convertedduration = self.convert_seconds_to_duration(duration)
-                self.add_song(title, song_url, link, convertedduration, thumbnail, added_by)
+                converted_duration = self.convert_seconds_to_duration(duration)
+                self.add_song(title, song_url, link, converted_duration, thumbnail, added_by)
                 logger.info(f"Song hinzugefügt: {title}, Dauer: {duration}")
                 if not self.is_playing:
                     await self.play_next(voice_client)
@@ -81,7 +81,7 @@ class Player:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             video = ydl.extract_info(link, download=False)
         # Extrahiere die Informationen
-        title = video.get('title', 'Unknown Title') #Hole Title sonst Unkowntitle
+        title = video.get('title', 'Unknown Title') #Hole Title sonst Unknown title
         # Song URL: Hole die URL aus dem 'formats'-Schlüssel, falls 'url' nicht existiert
         song_url = video.get('url')  # Normalerweise hier
         if not song_url and 'formats' in video:
@@ -123,9 +123,9 @@ class Player:
             logger.error(f"Ungültiges Dauerformat für den Song '{title}': {duration}")
             duration = "0:00"  # Setze auf einen Standardwert, wenn die Dauer ungültig ist   
         
-        playlistid = self.playlistcounter(self.songs)  
+        playlist_id = self.playlistcounter(self.songs)
         self.songs.append({
-            'playlistid': playlistid,
+            'playlistid': playlist_id,
             'title': title,
             'url': url,
             'shorturl': shorturl,
@@ -134,13 +134,13 @@ class Player:
             'added_by': added_by
         })
         self.playlist.append(
-            [playlistid, self.songs[-1]]
+            [playlist_id, self.songs[-1]]
         )     
     
     def playlistcounter(self, playlist: list)->int:
-        ID = len(playlist)
-        ID + 1 # Addiere immer um 1 weil Neuer Eintrag
-        return ID
+        playlist_id = len(playlist)
+        var = playlist_id + 1  # Addiere immer um 1 weil neuer Eintrag
+        return var
        
     async def play_next(self, voice_client):
         """Play the next song in the queue if available."""
@@ -150,7 +150,7 @@ class Player:
         if self.songs:
             next_song = self.songs.pop(0)  # Hole den nächsten Song
             current_song = next_song
-            self.currentsongurl = next_song['url']
+            self.current_song_url = next_song['url']
             self.voice_client = voice_client
             self.source = discord.FFmpegPCMAudio(next_song['url'], **self.ffmpeg_options)
             voice_client.play(self.source, after=lambda e: self.bot.loop.create_task(self.play_next(voice_client)))
@@ -164,9 +164,9 @@ class Player:
     def get_current_song(self):
         logger.info("get Current INDEX")
         if self.current_index >= 0:
-            logger.info("CurrendIndex: " + str(self.current_index))
-            currendPlaylistIndex = self.playlist[self.current_index]
-            return currendPlaylistIndex[-1]
+            logger.info("CurrentIndex: " + str(self.current_index))
+            current_playlist_index = self.playlist[self.current_index]
+            return current_playlist_index[-1]
         return None
 
     def set_current_song(self, song: int):
@@ -197,7 +197,7 @@ class Player:
             logger.info(f"Changing Volume to {volume}")
             self.voice_client.stop()
             # Hier verwenden wir den Link, der bereits abgespielt wird, um die Lautstärke zu ändern
-            self.source = discord.FFmpegPCMAudio(self.currentsongurl, **self.update_effects(volume=volume))
+            self.source = discord.FFmpegPCMAudio(self.current_song_url, **self.update_effects(volume=volume))
             self.voice_client.play(self.source)
     
     async def change_bass(self, bass:float):
@@ -206,7 +206,7 @@ class Player:
             logger.info(f"Changing bass to {bass}")
             self.voice_client.stop()
             #bass ändern
-            self.source = discord.FFmpegPCMAudio(self.currentsongurl, **self.update_effects(bass=bass))
+            self.source = discord.FFmpegPCMAudio(self.current_song_url, **self.update_effects(bass=bass))
             self.voice_client.play(self.source)
 
     async def reset_pl_effects(self):
@@ -215,7 +215,7 @@ class Player:
             logger.info(f"Reseting Playlist Effects")
             self.voice_client.stop()
             # Hier verwenden wir den Link, der bereits abgespielt wird, um die Lautstärke zu ändern
-            self.source = discord.FFmpegPCMAudio(self.currentsongurl, **self.update_effects())
+            self.source = discord.FFmpegPCMAudio(self.current_song_url, **self.update_effects())
             self.voice_client.play(self.source)
    
     def update_effects(self, volume: float = None, bass: float = None, treble: float = None):
@@ -224,9 +224,9 @@ class Player:
         if volume is None and bass is None and treble is None:
             #Resete alles
             logger.info("Reset Audio Effects")
-            self.volume = self.defaultvolume
-            self.bass = self.defaultbass
-            self.treble = self.defaulttreble
+            self.volume = self.default_volume
+            self.bass = self.default_bass
+            self.treble = self.default_treble
             effects.append(f"volume={self.volume}")
             effects.append(f"bass=g={self.bass}")
             effects.append(f"treble=g={self.treble}")
@@ -251,12 +251,12 @@ class Player:
         # Verbinde alle Effekte in der Filterkette
         self.effects_chain = ", ".join(effects)
         logger.info(f"Updatet effect Chain: {self.effects_chain}")      
-        MpegefectOptions = {
+        mpeg_options = {
             'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
             'options': f'-vn -filter:a "{self.effects_chain}"'
         }
-        print(MpegefectOptions)
-        return MpegefectOptions
+        print(mpeg_options)
+        return mpeg_options
             
         
 #######################
@@ -284,12 +284,12 @@ class Player:
         raise TypeError("Duration must be a string or int")
 
     def get_total_duration(self):
-        """Berechnet die Gesamtdauer in Sekunden und gibt sie als 'Minuten:Sekunden'-String zurück"""
+        """Berechnet die Gesamtdauer in Sekunden und gibt sie als 'Minuten: Sekunden'-String zurück"""
         total_seconds = sum(self.convert_duration_to_seconds(song['duration']) for song in self.songs)
         return self.seconds_to_min_sec(total_seconds)
 
     def seconds_to_min_sec(self, total_seconds):
-        """Konvertiert Sekunden in das Format 'Minuten:Sekunden'"""
+        """Konvertiert Sekunden in das Format 'Minuten: Sekunden'"""
         minutes = total_seconds // 60
         seconds = total_seconds % 60
         return f"{minutes}:{seconds:02}"  # Stellt sicher, dass die Sekunden immer zweistellig sind

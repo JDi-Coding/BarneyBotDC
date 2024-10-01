@@ -17,8 +17,15 @@ convert_cookies.py
 B-Models/
 TestBot
 TestBot/
+SelfBot/
+logs/
+cookie/
+uploaded_audio/
+.vscode/
 test.py
 ideas.txt
+JsPID1.txt
+PyPID1.txt
 
 
 # Umgebungsvariablen und Einstellungen ignorieren

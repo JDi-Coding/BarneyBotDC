@@ -8,20 +8,22 @@ from config.settings import LOGGING_CONFIG
 logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger('music')
 
+
+def convert_to_float(value: str) -> float:
+    """Hilfsfunktion, um Komma in Punkt zu ändern und String in Float umzuwandeln."""
+    value = value.replace(',', '.')  # Ersetze Komma mit Punkt
+    try:
+        return float(value)  # Konvertiere zu Float
+    except ValueError:
+        raise ValueError(f"Cannot convert '{value}' to float")
+
+
 class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.voice_clients = {}
         self.player = Player(bot)  # Player-Instanz bleibt
 
-    def convert_to_float(self, value: str) -> float:
-        """Hilfsfunktion, um Komma in Punkt zu ändern und String in Float umzuwandeln."""
-        value = value.replace(',', '.')  # Ersetze Komma mit Punkt
-        try:
-            return float(value)  # Konvertiere zu Float
-        except ValueError:
-            raise ValueError(f"Cannot convert '{value}' to float")
-    
     MusicGroup = app_commands.Group(name="music", description="lass den bot music spielen")
            
     @MusicGroup.command(name="play", description="Play a song from a YouTube link.")
@@ -99,7 +101,7 @@ class Music(commands.Cog):
     @MusicGroup.command(name="volume", description="Setzt die Lautstärke")
     async def volume(self, interaction: discord.Interaction, volume: str):
         try:
-            volume_float = self.convert_to_float(volume)            
+            volume_float = convert_to_float(volume)
             # Überprüfe, ob der Wert im gültigen Bereich liegt
             if 0.0 <= volume_float <= 3.0:
                 await self.player.change_volume(volume_float)  # Lautstärke ändern
@@ -111,9 +113,9 @@ class Music(commands.Cog):
             await interaction.response.send_message("Wert muss Zwischen 0.01 und 3.0 sein", ephemeral=True)
   
     @MusicGroup.command(name="bass", description="Boosted den bass nutze bitte , statt .")
-    async def bass(self, interaction: discord.interactions, bass: float):
+    async def bass(self, interaction: discord.interactions, bass: str):
         try:
-            bass_float = self.convert_to_float(bass)            
+            bass_float = convert_to_float(bass)
             # Überprüfe, ob der Wert im gültigen Bereich liegt
             if 0.0 <= bass_float <= 3.0:
                 await self.player.change_volume(bass_float)  # Lautstärke ändern
@@ -124,9 +126,9 @@ class Music(commands.Cog):
             logger.error(str(e))
             await interaction.response.send_message("Wert muss Zwischen 0.01 und 3.0 sein", ephemeral=True)
     @MusicGroup.command(name="treble", description="veraendere den treble")  
-    async def treble(self, interaction: discord.interactions, bass: float):
+    async def treble(self, interaction: discord.interactions, bass: str):
         try:
-            treble_float = self.convert_to_float(bass)            
+            treble_float = convert_to_float(bass)
             # Überprüfe, ob der Wert im gültigen Bereich liegt
             if 0.0 <= treble_float <= 3.0:
                 await self.player.change_volume(treble_float)  # Lautstärke ändern
