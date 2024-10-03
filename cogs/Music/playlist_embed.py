@@ -1,6 +1,9 @@
-import discord
 import logging
+
+import discord
+
 from config.settings import LOGGING_CONFIG
+
 logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger('playlist_embed')
 

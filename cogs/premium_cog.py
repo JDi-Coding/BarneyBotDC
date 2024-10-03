@@ -1,10 +1,12 @@
-import discord
-from discord.ext import commands
-from discord import app_commands
-from config.config import PREMIUM_GUILD_IDS
-from config.utils import has_premium_access
 import logging
+
+import discord
+from discord import app_commands
+from discord.ext import commands
+
+from config.config import PREMIUM_GUILD_IDS
 from config.settings import LOGGING_CONFIG
+
 logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger('bot')
 

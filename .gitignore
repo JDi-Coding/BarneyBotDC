@@ -22,10 +22,15 @@ logs/
 cookie/
 uploaded_audio/
 .vscode/
+venv/
 test.py
 ideas.txt
 JsPID1.txt
 PyPID1.txt
+StartBarneyBot.bat
+StartSelfBot.bat
+qodana.yaml
+DCBotsStartup.exe
 
 
 # Umgebungsvariablen und Einstellungen ignorieren

@@ -1,11 +1,10 @@
 # logging_cog.py
-import os
 import logging
+import os
+
 from config.settings import LOGGING_CONFIG
 logging.config.dictConfig(LOGGING_CONFIG)
 from discord.ext import commands
-
-
 def setup_logging():
     if not os.path.exists('logs'):
         os.makedirs('logs')

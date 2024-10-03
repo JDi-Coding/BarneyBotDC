@@ -1,10 +1,13 @@
+import logging
+
 import discord
-from discord.ext import commands
 from discord import app_commands
+from discord.ext import commands
+
 from cogs.Music.player import Player
 from cogs.Music.playlist_embed import PlaylistEmbed
-import logging
 from config.settings import LOGGING_CONFIG
+
 logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger('music')
 
@@ -43,7 +46,7 @@ class Music(commands.Cog):
         # Play the song using the Player class
         try:
             added_by = interaction.user.name
-            #print("added_by: ", added_by) 
+            print("added_by: ", added_by)
             title, duration, thumbnail = await self.player.play(voice_client, link, added_by)  # Get duration and thumbnail
             await interaction.followup.send(f"Now playing: [**{title}**]({link})", ephemeral=True)
         except ValueError as e:

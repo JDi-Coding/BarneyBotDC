@@ -1,13 +1,14 @@
 # cogs/monitor_cog.py
-import discord
-from discord.ext import commands
-import os
-import logging
 import asyncio
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
 import logging
+import os
+
+from discord.ext import commands
+from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer
+
 from config.settings import LOGGING_CONFIG
+
 logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger('monitor')
 class MyHandler(FileSystemEventHandler):

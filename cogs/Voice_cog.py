@@ -1,12 +1,13 @@
-import discord
-from discord.ext import commands
-from discord import app_commands
 import asyncio
-from gtts import gTTS
 import os
-from moviepy.editor import VideoFileClip
-import yt_dlp
+
+import discord
+from discord import app_commands
 from discord.ext import commands
+from gtts import gTTS
+from moviepy.editor import VideoFileClip
+
+
 class Voice(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -15,10 +16,6 @@ class Voice(commands.Cog):
             'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
             'options': '-vn -filter:a "volume=0.25"'
         }
-
-
-
-
     VoiceGroup = app_commands.Group(name="voice", description="Voice commands")
 
     @VoiceGroup.command(name="joinvc", description="Join a specified voice channel.")

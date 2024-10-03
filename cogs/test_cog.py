@@ -1,12 +1,15 @@
 # test_cog.py
-import discord
-from discord.ext import commands
-from discord import app_commands
-from config.config import TEST_GUILD_IDS
-from config.utils import has_premium_access
-from cogs.test.test import test_function_1, test_function_2
 import logging
+
+import discord
+from discord import app_commands
+from discord.ext import commands
+
+from cogs.test.test import test_function_1, test_function_2
+from config.config import TEST_GUILD_IDS
 from config.settings import LOGGING_CONFIG
+from config.utils import has_premium_access
+
 logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger('test')
 

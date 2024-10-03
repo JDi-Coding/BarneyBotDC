@@ -1,19 +1,19 @@
 # bot.py
-import discord
-from discord.ext import commands
-#from discord import app_commands
-
-import os
-#import logging
+import logging.config
+# import logging
 import asyncio
+import logging.config
+import os
+import sys
+import discord
 from colorama import Fore, Style, init
+from discord.ext import commands
 from gtts import gTTS
-from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer
 from config.config import TOKEN, COMMAND_PREFIX, PREMIUM_GUILD_IDS, TEST_GUILD_IDS  # GUILD_ID importieren
 from config.settings import LOGGING_CONFIG
-import logging.config
-import sys
+# from discord import app_commands
 sys.stdout.reconfigure(encoding='utf-8')
 ###################################################################################
 init(autoreset=True) 

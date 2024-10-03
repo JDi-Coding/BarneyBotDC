@@ -1,12 +1,15 @@
+import logging
+import re
+import urllib.parse
+# import asyncio
+from concurrent.futures import ThreadPoolExecutor
+
 import discord
 import yt_dlp
-import urllib.parse
 from pytube import Playlist as PytubePlaylist
-#import asyncio
-from concurrent.futures import ThreadPoolExecutor
-import re
-import logging
+
 from config.settings import LOGGING_CONFIG
+
 logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger('player')
 

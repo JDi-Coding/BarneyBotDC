@@ -1,9 +1,12 @@
 # tempvoice_cog.py
-import discord
-from discord.ext import commands
-from discord import app_commands
 import logging
+
+import discord
+from discord import app_commands
+from discord.ext import commands
+
 from config.settings import LOGGING_CONFIG
+
 logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger('tempvoice')
 class TempVoice(commands.Cog):

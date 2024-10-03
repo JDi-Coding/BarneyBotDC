@@ -1,9 +1,13 @@
 # basic_cog.py
-import discord
-from discord.ext import commands
-from discord import app_commands
 import logging
+
+import discord
+from discord import app_commands
+from discord import Interaction, InteractionResponse
+from discord.ext import commands
+
 from config.settings import LOGGING_CONFIG
+import  logging.config
 logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger('basic')
 
@@ -44,11 +48,11 @@ class BasicCog(commands.Cog):
 
     #Befehl um alle Verfügbaren SlashBefehle anzuzeigen
     @commands.command(
-            help="hope it was helpfull : )",
+            help="hope it was helpful : )",
             description="this Command Shows every Slash-Command available in this Category. usage: [Prefix][Category]info",
             brief="-> Shows every Slash-Command",
             enabled=True, #Enables the Command or Disable the Command [TRUE/FALSE]
-            hidden=False #Hids the Command for !help altough !help ping shows still information [TRUE/FALSE]
+            hidden=False #Hids the Command for !help although !help ping shows still information [TRUE/FALSE]
     )
     async def basicinfo(self, ctx):
         # Alle /-Befehle des Bots

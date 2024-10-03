@@ -1,8 +1,9 @@
 import discord
-from discord.ext import commands
 from discord import app_commands
-import logging
+from discord.ext import commands
+
 from config.settings import LOGGING_CONFIG
+import  logging.config
 logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger('help')
 
