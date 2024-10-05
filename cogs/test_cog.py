@@ -5,7 +5,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from cogs.test.test import test_function_1, test_function_2
+from cogs.test.test import test_function_1, test_function_2, test_function_3
 from config.config import TEST_GUILD_IDS
 from config.settings import LOGGING_CONFIG
 from config.utils import has_premium_access
@@ -163,13 +163,20 @@ class TestCog(commands.Cog):
         except Exception as e:
            await interaction.response.send_message(str(e))                
     # Test-Command als TextCommand für Test- und Premium-Guilds
+
+    @TestGroup.command(name="foldertest", description="folder test")
+    async def test_command_8(self, interaction: discord.Interaction):
+        foldertest = test_function_3()
+        await interaction.response.send_message(f"Test 3: {foldertest}")
     @commands.command()
     async def test_text_1(self, ctx):
         guild_id = ctx.guild.id
         if has_premium_access(guild_id):
             await ctx.send("Du hast Zugriff auf das Premium-Text-Feature!")
         else:
-            await ctx.send("Dieses Feature ist nur für Premium-Server verfügbar.") 
+            await ctx.send("Dieses Feature ist nur für Premium-Server verfügbar.")
+
+
 
 async def setup(bot):
     await bot.add_cog(TestCog(bot))
