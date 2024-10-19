@@ -27,7 +27,6 @@ def get_meme_path(meme_dir: str):
     # Sende das Meme als Datei
     return meme_path
 
-
 class Memes(commands.Cog):
     def __init__(self, bot):
         self.bot = bot

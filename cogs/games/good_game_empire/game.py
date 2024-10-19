@@ -243,7 +243,7 @@ async def remove_place_from_member(interaction: discord.Interaction,place_name: 
         cursor.close()
         conn.close()
 
-async  def show_members_of_allience(interaction: discord.Interaction):
+async def show_members_of_allience(interaction: discord.Interaction):
     guild = interaction.guild
     guild_id = guild.id
 
