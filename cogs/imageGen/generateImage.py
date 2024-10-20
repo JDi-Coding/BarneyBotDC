@@ -39,7 +39,7 @@ class ImageGen:
         pipe = StableDiffusionPipeline.from_pretrained(
             "CompVis/stable-diffusion-v1-4",
             torch_dtype=torch.float16,
-            #safety_checker=None,
+            safety_checker=None,
             revision='fp16'
         )
         #does not have DDMIN so not in use
