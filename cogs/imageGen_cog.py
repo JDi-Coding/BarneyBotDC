@@ -6,8 +6,6 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import logging
-
-from cogs.imageGen.device import Device
 from cogs.imageGen.generateImage import ImageGen
 from config.settings import LOGGING_CONFIG
 logging.config.dictConfig(LOGGING_CONFIG)

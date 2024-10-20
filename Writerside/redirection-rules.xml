@@ -10,4 +10,16 @@
         <description>Created after removal of "About Barneybot" from Barneybot</description>
         <accepts>starter-topic.html</accepts>
     </rule>
+    <rule id="5504f240">
+        <description>Created after removal of "Base_Cog" from Barneybot</description>
+        <accepts>Base Models.html</accepts>
+    </rule>
+    <rule id="f943255">
+        <description>Created after removal of "Music" from Barneybot</description>
+        <accepts>Aufgaben.html</accepts>
+    </rule>
+    <rule id="45185438">
+        <description>Created after removal of "Topic title" from Barneybot</description>
+        <accepts>data_README.html</accepts>
+    </rule>
 </rules>

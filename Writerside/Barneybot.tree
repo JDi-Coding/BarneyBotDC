@@ -6,16 +6,15 @@
                  name="Barneybot"
                  start-page="README.md">
 
-    <toc-element topic="README.md" accepts-web-file-names-ref="75a75d9c"/>
-    <toc-element toc-title="cogs">
-        <toc-element topic="Base Models.md"/>
-    </toc-element>
-    <toc-element toc-title="data">
-        <toc-element topic="data_README.md"/>
-    </toc-element>
-    <toc-element toc-title="Files">
-        <toc-element toc-title="Orga">
-            <toc-element topic="Aufgaben.md"/>
+    <toc-element topic="README.md" accepts-web-file-names-ref="75a75d9c">
+        <toc-element topic="config.md"/>
+        <toc-element topic="logs.md"/>
+        <toc-element topic="Cogs.md">
+            <toc-element topic="ImageGen-cog.md"/>
+            <toc-element topic="Memes-Cog.md"/>
+            <toc-element topic="Test-Cog.md"/>
+            <toc-element topic="Games-Cog.md"/>
+            <toc-element topic="Music.md"/>
         </toc-element>
     </toc-element>
     <toc-element toc-title="Writerside">
