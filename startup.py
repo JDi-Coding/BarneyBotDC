@@ -72,13 +72,7 @@ class Startup:
         print("----------------------------")
         print(" ")
 
-    #Reloads the cogs
-    async def reload_cogs(self):
-        for filename in os.listdir('./cogs'):
-            if filename.endswith('.py'):
-                await self.bot.unload_extension(f'cogs.{filename[:-3]}')
-                await self.bot.load_extension(f'cogs.{filename[:-3]}')
-                # logger.info(f"Module {filename} reloaded.")
+
 
 
 

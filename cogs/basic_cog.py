@@ -15,9 +15,6 @@ class BasicCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-
-
-   
     basic = app_commands.Group(name="basic", description="Alle Basis Commands ohne Nutzen")
     
     @basic.command(

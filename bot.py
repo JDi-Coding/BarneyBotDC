@@ -1,23 +1,30 @@
 # bot.py
 # import logging
 import asyncio
-import logging.config
+
 import os
 import sys
+
 import discord
-from colorama import Fore, Style, init
 from discord.ext import commands
+from colorama import Fore, Style, init
+
+
 from gtts import gTTS
+
+
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
+
 from config.config import TOKEN, COMMAND_PREFIX, PREMIUM_GUILD_IDS, TEST_GUILD_IDS  # GUILD_ID importieren
 from config.settings import LOGGING_CONFIG
+import logging.config
 
 from startup import Startup
+from filewatcher import Filewatcher
 
 # from discord import app_commands
 sys.stdout.reconfigure(encoding='utf-8')
-###################################################################################
 init(autoreset=True) 
 # Logging konfigurieren
 logging.config.dictConfig(LOGGING_CONFIG)
@@ -29,29 +36,6 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix=COMMAND_PREFIX, intents=intents)
 
-# Observer Starten
-#observer = Observer()
-
-###################################################################################
-
-# Datei-Änderungsereignisse
-class MyHandler(FileSystemEventHandler):
-    def on_modified(self, event):
-        if event.src_path.endswith('.py'):
-            logger.info(f"Change detected in {event.src_path}, reloading cogs...")
-            asyncio.run_coroutine_threadsafe(reload_cogs(), bot.loop)
-
-###################################################################################
-
-# Cogs neu laden
-async def reload_cogs():
-    for filename in os.listdir('./cogs'):
-        if filename.endswith('.py'):
-            await bot.unload_extension(f'cogs.{filename[:-3]}')
-            await bot.load_extension(f'cogs.{filename[:-3]}')
-            #logger.info(f"Module {filename} reloaded.")
-###################################################################################
-
 # Bot starten
 @bot.event
 async def on_ready():
@@ -59,15 +43,16 @@ async def on_ready():
     for guild in bot.guilds:
         logger.info(f'- {guild.name} (ID: {guild.id})')
 
-    #event_handler = MyHandler()
-    #observer.schedule(event_handler, path='./cogs', recursive=False)
-    #observer.start()
-    #logger.info("Started watching for file changes...")
+    try:
+        Filewatcher(bot)
+        logger.info("Started watching for file changes...")
+    except Exception as filewatcher_exception:
+        logger.error(filewatcher_exception)
 
     try:
         await Startup(bot).run()
-    except Exception as e:
-        logger.error(f'Error in Startup: {e}')
+    except Exception as Startup_exception:
+        logger.error(f'Error in Startup: {Startup_exception}')
 
 
 @bot.command()
