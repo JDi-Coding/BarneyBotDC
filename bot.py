@@ -19,6 +19,7 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix=COMMAND_PREFIX, intents=intents)
 
+
 # Bot starten
 @bot.event
 async def on_ready():
@@ -38,4 +39,3 @@ try:
 except Exception as e:
     logger.error(f"{e}")
     logger.error(f"Bot konnte nicht gestartet werden")
-

@@ -7,16 +7,14 @@ from gtts import gTTS
 import os
 
 logging.config.dictConfig(LOGGING_CONFIG)
-logger = logging.getLogger('base')
-
+logger = logging.getLogger('tts')
 
 class TTS(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-
     TTSGroup = app_commands.Group(name="tts", description="tts")
-
+    #Creates a temporary tts.mp3 file and plays it
     @TTSGroup.command(name="speak", description="Converts text to speech and plays it in a voice channel", nsfw=False)
     async def speak(self, interaction: discord.Interaction, text: str):
         try:
