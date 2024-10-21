@@ -28,7 +28,7 @@ intents.message_content = True
 bot = commands.Bot(command_prefix=COMMAND_PREFIX, intents=intents)
 
 # Observer Starten
-observer = Observer()
+#observer = Observer()
 
 ###################################################################################
 
@@ -114,9 +114,9 @@ async def on_ready():
     logger.info(f'{bot.user.name} ist in den folgenden Gilden:')
     for guild in bot.guilds:
         logger.info(f'- {guild.name} (ID: {guild.id})')
-    event_handler = MyHandler()  
-    observer.schedule(event_handler, path='./cogs', recursive=False)
-    observer.start()
+    #event_handler = MyHandler()
+    #observer.schedule(event_handler, path='./cogs', recursive=False)
+    #observer.start()
     logger.info("Started watching for file changes...")
     try:
         await load_cogs()  # Cogs laden
@@ -150,7 +150,6 @@ async def speak(ctx, *, text: str):
 try:
     bot.run(TOKEN)
 except Exception as e:
-    logger.error(f"ERROR Bot konnte nicht gestartet werden: {e}")
-finally:
-    observer.stop()
-    observer.join()
+    logger.error(f"{e}")
+    logger.error(f"Bot konnte nicht gestartet werden")
+

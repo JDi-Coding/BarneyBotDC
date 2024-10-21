@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE rules SYSTEM "https://resources.jetbrains.com/writerside/1.0/redirection-rules.dtd">
+<!--suppress ALL -->
 <rules>
     <!-- format is as follows
     <rule id="<unique id>">

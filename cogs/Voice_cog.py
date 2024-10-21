@@ -105,6 +105,7 @@ class Voice(commands.Cog):
 
         # Wait for the audio to finish playing
         while vc.is_playing():
+            pass
             await asyncio.sleep(1)
 
         # Disconnect from the voice channel and delete the file

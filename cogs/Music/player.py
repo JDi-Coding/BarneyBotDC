@@ -1,7 +1,7 @@
 import logging
 import re
 import urllib.parse
-# import asyncio
+import asyncio
 from concurrent.futures import ThreadPoolExecutor
 
 import discord
