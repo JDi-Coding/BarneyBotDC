@@ -163,7 +163,7 @@ class Player:
             return next_song['title']
         else:
             self.is_playing = False
-            
+
     def get_current_song(self):
         logger.info("get Current INDEX")
         if self.current_index >= 0:

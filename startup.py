@@ -9,7 +9,7 @@ from colorama import Fore, Style, init
 import logging.config
 from config.settings import LOGGING_CONFIG
 logging.config.dictConfig(LOGGING_CONFIG)
-logger = logging.getLogger('bot')
+logger = logging.getLogger('startup')
 
 sys.stdout.reconfigure(encoding='utf-8')
 init(autoreset=True)
@@ -21,14 +21,16 @@ class Startup:
     async def run(self):
         await self.load_cogs()
         await self.start_sync()
-        await self.StartupMessage()
+        await self.startup_getguilds_message()
+        await self.startup_message()
+
 
     #Lade die cog dateien
     async def load_cogs(self):
         for filename in os.listdir('./cogs'):
             if filename.endswith('.py'):
                 await self.bot.load_extension(f'cogs.{filename[:-3]}')
-                # logger.info(f"Module {filename} loaded.")
+                logger.info(f"Module {filename} loaded.")
 
     # Synchronisiere die App-Commands mit den Guilds
     async def sync_guilds(self, guild_ids: list):
@@ -41,7 +43,7 @@ class Startup:
                     total_synced += len(synced)
                 else:
                     logger.warning(f"Guild ID {guild_id} not found!")
-                logger.info(f"Commands synced: {total_synced}")
+                #logger.info(f"Commands synced: {total_synced}")
         except Exception as sync_exception:
             logger.error(f"Error in sync_guilds")
             raise sync_exception
@@ -49,21 +51,21 @@ class Startup:
     #Synchronisiert die App-Commands mit allen anderen Guilds.
     async def start_sync(self):
         try:
-            logger.info("starting sync")
+            logger.info("Starting sync")
 
-            logger.info("sync Global")
+            logger.info("Sync Global")
             await self.bot.tree.sync()
-            logger.info("sync Test")
+            logger.info("Sync Test")
             await self.sync_guilds(TEST_GUILD_IDS)
-            logger.info("sync Premium")
+            logger.info("Sync Premium")
             await self.sync_guilds(PREMIUM_GUILD_IDS)
 
-            logger.info("finished sync")
+            logger.info("Finished sync")
         except Exception as start_sync_exception:
             raise start_sync_exception
 
     #Startup Message
-    async def StartupMessage(self):
+    async def startup_message(self):
         print(" ")
         print("----------------------------")
         print(Style.BRIGHT + Fore.RED + "############################")
@@ -72,6 +74,11 @@ class Startup:
         print("----------------------------")
         print(" ")
 
+    #Zeigt in welchen Guilden, der Bot ist.
+    async def startup_getguilds_message(self):
+        logger.info(f'{self.bot.user.name} ist in den folgenden Gilden:')
+        for guild in self.bot.guilds:
+            logger.info(f'- {guild.name} (ID: {guild.id})')
 
 
 

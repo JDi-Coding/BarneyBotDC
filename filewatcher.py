@@ -1,19 +1,18 @@
 #filewatcher.py
 import os
 import asyncio
-
 from sympy import false
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
-
 from config.settings import LOGGING_CONFIG
 import logging
 logging.config.dictConfig(LOGGING_CONFIG)
-logger = logging.getLogger('bot')
+logger = logging.getLogger('file-watcher')
 
 class Filewatcher(FileSystemEventHandler):
     def __init__(self, bot):
         self.bot = bot
+        logger.info("Started watching for file changes...")
         self.observer = Observer()
         self.observer.schedule(self, path='./cogs', recursive=False)
         self.observer.start()
