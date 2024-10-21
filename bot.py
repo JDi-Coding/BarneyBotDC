@@ -36,7 +36,7 @@ bot = commands.Bot(command_prefix=COMMAND_PREFIX, intents=intents)
 class MyHandler(FileSystemEventHandler):
     def on_modified(self, event):
         if event.src_path.endswith('.py'):
-            #logger.info(f"Change detected in {event.src_path}, reloading cogs...")
+            logger.info(f"Change detected in {event.src_path}, reloading cogs...")
             asyncio.run_coroutine_threadsafe(reload_cogs(), bot.loop)
 
 ###################################################################################
@@ -59,52 +59,36 @@ async def reload_cogs():
             #logger.info(f"Module {filename} reloaded.")
 ###################################################################################
 
-#Synchronisiert Globale App-Commands
-async def sync_global():
-        synced = await bot.tree.sync()
-        #logger.info(f"Synced {len(synced)} Global Command(s)")
-        return len(synced)
-
-###################################################################################
-
-#Syncroniesiert App-Commands für die Test_Guilds
-async def sync_test_guilds():
-    total_synced = 0
-    for TEST_GUILD_ID in TEST_GUILD_IDS:
-        guild = bot.get_guild(TEST_GUILD_ID)
-        if guild is not None:
-            synced = await bot.tree.sync(guild=guild)
-            total_synced += len(synced)
-            #logger.info(f"Synced {len(synced)} Command(s) for Test Guild: {guild.name} (ID: {guild.id})")
-        else:
-            logger.warning(f"Test Guild ID {TEST_GUILD_ID} not found!")
-    return total_synced
-
-###################################################################################
-
-# Synchronisiere die App-Commands mit den Premium Guilds
-async def sync_premium_guilds():
-    total_synced = 0
-    for PREMIUM_GUILD_ID in PREMIUM_GUILD_IDS:
-        guild = bot.get_guild(PREMIUM_GUILD_ID)
-        if guild is not None:
-            synced = await bot.tree.sync(guild=guild)
-            total_synced += len(synced)
-            #logger.info(f"Synced {len(synced)} Command(s) for Premium Guild {guild.name} (ID: {guild.id})")
-        else:
-            logger.warning(f"Premium Guild ID {PREMIUM_GUILD_ID} not found!")
-    return total_synced
+# Synchronisiere die App-Commands mit den Guilds
+async def sync_guilds(guild_ids: list):
+    try:
+        total_synced = 0
+        for guild_id in guild_ids:
+            guild = bot.get_guild(guild_id)
+            if guild is not None:
+                synced = await bot.tree.sync(guild=guild)
+                total_synced += len(synced)
+            else:
+                logger.warning(f"Guild ID {guild_id} not found!")
+            logger.info(f"Commands synced: {total_synced}")
+    except Exception as sync_exception:
+        logger.error(f"Error in sync_guilds")
+        raise sync_exception
 
 ###################################################################################
 
 #Synchronisiert die App-Commands mit allen anderen Guilds.
 async def start_sync():
-    global_sync_count = await sync_global()
-    test_sync_count = await sync_test_guilds()
-    premium_sync_count = await sync_premium_guilds()
-    
-    total_synced = global_sync_count + test_sync_count + premium_sync_count
-    logger.info(f"Total synced {total_synced} Commands across all Guilds")
+    try:
+        logger.info("sync Global")
+        await bot.tree.sync()
+        logger.info("sync Test")
+        await sync_guilds(TEST_GUILD_IDS)
+        logger.info("sync Premium")
+        await sync_guilds(PREMIUM_GUILD_IDS)
+        logger.info("sync Done")
+    except Exception as start_sync_exception:
+        raise start_sync_exception
 
 ###################################################################################
 
@@ -117,7 +101,7 @@ async def on_ready():
     #event_handler = MyHandler()
     #observer.schedule(event_handler, path='./cogs', recursive=False)
     #observer.start()
-    logger.info("Started watching for file changes...")
+    #logger.info("Started watching for file changes...")
     try:
         await load_cogs()  # Cogs laden
     except Exception as exceptions:
