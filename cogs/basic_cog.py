@@ -6,14 +6,14 @@ from discord import app_commands
 from discord import Interaction, InteractionResponse
 from discord.ext import commands
 
-from config.settings import LOGGING_CONFIG
-import  logging.config
-logging.config.dictConfig(LOGGING_CONFIG)
-logger = logging.getLogger('basic')
+#from config.settings import LOGGING_CONFIG
+from loggin import Logger
+
 
 class BasicCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.log = Logger('basic').getLogger()
 
     basic = app_commands.Group(name="basic", description="Alle Basis Commands ohne Nutzen")
     
@@ -23,7 +23,7 @@ class BasicCog(commands.Cog):
         nsfw=False
     )
     async def ping(self, interaction: discord.Interaction):
-        logger.info("Pinged")
+        self.log.info("Pinged")
         await interaction.response.send_message(f"Ping!", ephemeral=True)
 
     @basic.command(name="hello", description="Sage Hallo zum Bot")

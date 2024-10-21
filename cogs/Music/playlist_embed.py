@@ -1,17 +1,12 @@
-import logging
-
 import discord
-
-from config.settings import LOGGING_CONFIG
-
-logging.config.dictConfig(LOGGING_CONFIG)
-logger = logging.getLogger('playlist_embed')
 
 class PlaylistEmbed:
     def __init__(self, playlist):
         self.playlist = playlist
         self.current_page = 0
         self.max_songs_per_page = 5
+        from loggin import Logger
+        self.log = Logger('minecraft').getLogger()
 
     def create_embed(self):
         # Aktuell spielender Song und Thumbnail

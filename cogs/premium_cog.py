@@ -5,14 +5,13 @@ from discord import app_commands
 from discord.ext import commands
 
 from config.config import PREMIUM_GUILD_IDS
-from config.settings import LOGGING_CONFIG
 
-logging.config.dictConfig(LOGGING_CONFIG)
-logger = logging.getLogger('bot')
 
 class Premium(commands.Cog):
     def __init__(self, bot):
-        self.bot = bot 
+        self.bot = bot
+        from loggin import Logger
+        self.log = Logger('premium').getLogger()
         
             
     Premium = app_commands.Group(name="premium", description="premium commands", guild_ids=PREMIUM_GUILD_IDS)

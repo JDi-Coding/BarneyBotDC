@@ -7,10 +7,6 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from config.settings import LOGGING_CONFIG
-
-logging.config.dictConfig(LOGGING_CONFIG)
-logger = logging.getLogger('memes')
 
 
 def get_meme_path(meme_dir: str):
@@ -30,6 +26,8 @@ def get_meme_path(meme_dir: str):
 class Memes(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        from loggin import Logger
+        self.log = Logger('memes').getLogger()
 
     MemeGroup = app_commands.Group(name="meme", description="Alles rund um memes")
 

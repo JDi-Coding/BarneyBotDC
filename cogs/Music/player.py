@@ -8,11 +8,6 @@ import discord
 import yt_dlp
 from pytube import Playlist as PytubePlaylist
 
-from config.settings import LOGGING_CONFIG
-
-logging.config.dictConfig(LOGGING_CONFIG)
-logger = logging.getLogger('player')
-
 class Player:
     def __init__(self, bot):
         self.bot = bot
@@ -37,6 +32,8 @@ class Player:
         self.current_song = -1 # -1 = kein Current song
         self.current_song_url = None
         self.effects_chain = ""
+        from loggin import Logger
+        self.log = Logger('player').getLogger()
 
     async def play(self, voice_client, link: str, added_by: str):
         if voice_client is None or not voice_client.is_connected():
@@ -53,7 +50,7 @@ class Player:
                     title, song_url, duration, thumbnail = data
                     converted_duration = self.convert_seconds_to_duration(duration)
                     self.add_song(title, song_url, cleanurl, converted_duration, thumbnail, added_by)
-                    logger.info(f"Song hinzugefügt: {title}, Dauer: {duration}")
+                    self.log.info(f"Song hinzugefügt: {title}, Dauer: {duration}")
                 if not self.is_playing:
                     await self.play_next(voice_client)
             except Exception as e:
@@ -64,7 +61,7 @@ class Player:
                 title, song_url, duration, thumbnail = data
                 converted_duration = self.convert_seconds_to_duration(duration)
                 self.add_song(title, song_url, link, converted_duration, thumbnail, added_by)
-                logger.info(f"Song hinzugefügt: {title}, Dauer: {duration}")
+                self.log.info(f"Song hinzugefügt: {title}, Dauer: {duration}")
                 if not self.is_playing:
                     await self.play_next(voice_client)
             except Exception as e:
@@ -123,7 +120,7 @@ class Player:
     def add_song(self, title: str, url: str, shorturl: str, duration: str, thumbnail: str, added_by: str)-> None:
         # Überprüfe, ob die Dauer im richtigen Format ist
         if not isinstance(duration, str) or not re.match(r'^\d+:\d{2}$|^\d+:\d{2}:\d{2}$', duration):
-            logger.error(f"Ungültiges Dauerformat für den Song '{title}': {duration}")
+            self.log.error(f"Ungültiges Dauerformat für den Song '{title}': {duration}")
             duration = "0:00"  # Setze auf einen Standardwert, wenn die Dauer ungültig ist   
         
         playlist_id = self.playlistcounter(self.songs)
@@ -159,22 +156,22 @@ class Player:
             voice_client.play(self.source, after=lambda e: self.bot.loop.create_task(self.play_next(voice_client)))
             self.set_current_song(current_song['playlistid'])  # Setze den aktuellen Song
             self.is_playing = True
-            logger.info(f"Spiele den nächsten Song: {next_song['title']}")
+            self.log.info(f"Spiele den nächsten Song: {next_song['title']}")
             return next_song['title']
         else:
             self.is_playing = False
 
     def get_current_song(self):
-        logger.info("get Current INDEX")
+        self.log.info("get Current INDEX")
         if self.current_index >= 0:
-            logger.info("CurrentIndex: " + str(self.current_index))
+            self.log.info("CurrentIndex: " + str(self.current_index))
             current_playlist_index = self.playlist[self.current_index]
             return current_playlist_index[-1]
         return None
 
     def set_current_song(self, song: int):
         """Setze den aktuellen Song in der Warteschlange."""
-        logger.info("set Current INDEX: " + str(song))
+        self.log.info("set Current INDEX: " + str(song))
         self.current_index = song
         print(self.current_index)
 
@@ -193,7 +190,7 @@ class Player:
     async def change_volume(self, volume: float):
         if self.voice_client and self.voice_client.is_playing():
             # Stop the current audio and restart with the new volume
-            logger.info(f"Changing Volume to {volume}")
+            self.log.info(f"Changing Volume to {volume}")
             self.voice_client.stop()
             # Hier verwenden wir den Link, der bereits abgespielt wird, um die Lautstärke zu ändern
             self.source = discord.FFmpegPCMAudio(self.current_song_url, **self.update_effects(volume=volume))
@@ -202,7 +199,7 @@ class Player:
     async def change_bass(self, bass:float):
         if self.voice_client and self.voice_client.is_playing():
             # Stop the current audio and restart with the new bass
-            logger.info(f"Changing bass to {bass}")
+            self.log.info(f"Changing bass to {bass}")
             self.voice_client.stop()
             #bass ändern
             self.source = discord.FFmpegPCMAudio(self.current_song_url, **self.update_effects(bass=bass))
@@ -211,7 +208,7 @@ class Player:
     async def reset_pl_effects(self):
         if self.voice_client and self.voice_client.is_playing():
             # Stop the current audio and restart with the new volume
-            logger.info(f"Reseting Playlist Effects")
+            self.log.info(f"Reseting Playlist Effects")
             self.voice_client.stop()
             # Hier verwenden wir den Link, der bereits abgespielt wird, um die Lautstärke zu ändern
             self.source = discord.FFmpegPCMAudio(self.current_song_url, **self.update_effects())
@@ -222,7 +219,7 @@ class Player:
         effects = []
         if volume is None and bass is None and treble is None:
             #Resete alles
-            logger.info("Reset Audio Effects")
+            self.log.info("Reset Audio Effects")
             self.volume = self.default_volume
             self.bass = self.default_bass
             self.treble = self.default_treble
@@ -233,13 +230,13 @@ class Player:
             # Aktualisiere die Effecte
             if volume is not None:
                 self.volume = volume
-                logger.info(f"Setting Volume to {self.volume}")
+                self.log.info(f"Setting Volume to {self.volume}")
             if bass is not None:
                 self.bass = bass
-                logger.info(f"Setting Bass to {self.bass}")
+                self.log.info(f"Setting Bass to {self.bass}")
             if treble is not None:
                 self.treble = treble
-                logger.info(f"Setting Volume to {self.treble}")     
+                self.log.info(f"Setting Volume to {self.treble}")
             #Hinzufügen wenn nicht Standart
             if self.volume != 0.25:
                 effects.append(f"volume={self.volume}")
@@ -249,7 +246,7 @@ class Player:
                 effects.append(f"treble=g={self.treble}")
         # Verbinde alle Effekte in der Filterkette
         self.effects_chain = ", ".join(effects)
-        logger.info(f"Updatet effect Chain: {self.effects_chain}")      
+        self.log.info(f"Updatet effect Chain: {self.effects_chain}")
         mpeg_options = {
             'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
             'options': f'-vn -filter:a "{self.effects_chain}"'

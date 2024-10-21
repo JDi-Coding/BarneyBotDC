@@ -12,9 +12,12 @@ from config.config import db_host, db_port, db_user, db_password, dbname
 from cogs.games.good_game_empire.game import *
 
 
+
 class GGEmpire(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        from loggin import Logger
+        self.log = Logger('ggempire').getLogger()
 
     # Definiere die Gruppe für die Slash-Befehle
     gg_group = app_commands.Group(name="gg", description="gg commands")

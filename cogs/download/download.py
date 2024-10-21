@@ -11,8 +11,6 @@ from discord import app_commands
 from discord.ext import commands
 import logging
 from config import settings
-logging.config.dictConfig(settings.LOGGING_CONFIG)
-logger = logging.getLogger('bot')
 
 class Download:
     def __init__(self, input_url: str):
@@ -22,6 +20,8 @@ class Download:
             self.filename = None
             self.title = None
             self.download_dir = "C:/Users/jason/Downloads/ytdownload"
+            from loggin import Logger
+            self.log = Logger('download').getLogger()
 
             if not os.path.exists(self.download_dir):
                 os.makedirs(self.download_dir)
@@ -56,4 +56,4 @@ class Download:
             raise e
 
     def __del__(self):
-        logger.info('Object Download destroyed')
+        self.log.info('Object Download destroyed')

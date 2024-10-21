@@ -6,10 +6,7 @@ from discord.ext import commands
 
 from cogs.Music.player import Player
 from cogs.Music.playlist_embed import PlaylistEmbed
-from config.settings import LOGGING_CONFIG
 
-logging.config.dictConfig(LOGGING_CONFIG)
-logger = logging.getLogger('music')
 
 
 def convert_to_float(value: str) -> float:
@@ -26,6 +23,8 @@ class Music(commands.Cog):
         self.bot = bot
         self.voice_clients = {}
         self.player = Player(bot)  # Player-Instanz bleibt
+        from loggin import Logger
+        self.log = Logger('music').getLogger()
 
     MusicGroup = app_commands.Group(name="music", description="lass den bot music spielen")
            
@@ -112,7 +111,7 @@ class Music(commands.Cog):
             else:
                 await interaction.response.send_message("Volume must be between 0 and 3.", ephemeral=True)
         except ValueError as e:
-            logger.error(str(e))
+            self.log.error(str(e))
             await interaction.response.send_message("Wert muss Zwischen 0.01 und 3.0 sein", ephemeral=True)
   
     @MusicGroup.command(name="bass", description="Boosted den bass nutze bitte , statt .")
@@ -126,7 +125,7 @@ class Music(commands.Cog):
             else:
                 await interaction.response.send_message("Bass must be between 0 and 3.", ephemeral=True)
         except ValueError as e:
-            logger.error(str(e))
+            self.log.error(str(e))
             await interaction.response.send_message("Wert muss Zwischen 0.01 und 3.0 sein", ephemeral=True)
     @MusicGroup.command(name="treble", description="veraendere den treble")  
     async def treble(self, interaction: discord.interactions, bass: str):
@@ -139,7 +138,7 @@ class Music(commands.Cog):
             else:
                 await interaction.response.send_message("treble must be between 0 and 3.", ephemeral=True)
         except ValueError as e:
-            logger.error(str(e))
+            self.log.error(str(e))
             await interaction.response.send_message("Wert muss Zwischen 0.01 und 3.0 sein", ephemeral=True)
         
     @MusicGroup.command(name="nodupe", description="Entfernt alle Duplikate")
