@@ -16,6 +16,9 @@ class Voice(commands.Cog):
             'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
             'options': '-vn -filter:a "volume=0.25"'
         }
+        from loggin import Logger
+        self.log = Logger('voice').getLogger()
+
     VoiceGroup = app_commands.Group(name="voice", description="Voice commands")
 
     @VoiceGroup.command(name="joinvc", description="Join a specified voice channel.")
@@ -123,8 +126,8 @@ class Voice(commands.Cog):
             clip = VideoFileClip(file_path)
             video_title = video_file.filename
             video_duration = clip.duration
-            print(video_title)
-            print(video_duration)
+            self.log.info(video_title)
+            self.log.info(video_duration)
         except Exception as e:
             await interaction.followup.send(f"Hat nich geklapt {e}", ephemeral=True)
         finally:

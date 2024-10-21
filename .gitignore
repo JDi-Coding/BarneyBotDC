@@ -32,6 +32,7 @@ StartSelfBot.bat
 qodana.yaml
 DCBotsStartup.exe
 /model
+qodana.yaml
 
 
 # Umgebungsvariablen und Einstellungen ignorieren
