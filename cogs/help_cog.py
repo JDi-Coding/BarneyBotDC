@@ -1,12 +1,7 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-
-#from config.settings import LOGGING_CONFIG
-import  logging.config
-#logging.config.dictConfig(LOGGING_CONFIG)
-logger = logging.getLogger('help')
-
+from loggin import Logger
 
 class Help(commands.Cog):
     def __init__(self, bot):
@@ -14,6 +9,7 @@ class Help(commands.Cog):
         # Liste von Gruppen und Cogs, die ausgeschlossen werden sollen
         self.excluded_groups = ["test", "Important", "Owner"]  # Füge hier weitere Gruppen hinzu
         self.excluded_cogs = ["TestCog", "MonitorCog", "LoggingCog", "OwnerCog"]  # Füge hier weitere Cogs hinzu
+        self.log = Logger('help').getLogger()
         
     HelpGroup = app_commands.Group(name="help", description="Hilfe für den Bot")
     
@@ -42,9 +38,9 @@ class Help(commands.Cog):
         # Iteriere über alle Cogs
         for cog_name, cog in self.bot.cogs.items():
             if cog_name in self.excluded_cogs:
-                logger.debug(f"Überspringe Cog: {cog_name}")
+                self.log.debug(f"Überspringe Cog: {cog_name}")
                 continue
-            logger.debug(f"Überprüfe Cog: {cog_name}")
+            self.log.debug(f"Überprüfe Cog: {cog_name}")
             
             # Prüfen, ob der Cog eine Command-Gruppe hat
             for command_group in cog.__dict__.values():

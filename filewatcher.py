@@ -5,12 +5,6 @@ from sympy import false
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
-import logging
-
-#from config.settings import LOGGING_CONFIG
-#logging.config.dictConfig(LOGGING_CONFIG)
-logger = logging.getLogger('file-watcher')
-
 
 class Filewatcher(FileSystemEventHandler):
     def __init__(self, bot):
@@ -19,10 +13,12 @@ class Filewatcher(FileSystemEventHandler):
         self.observer = Observer()
         self.observer.schedule(self, path='./cogs', recursive=False)
         self.observer.start()
+        from loggin import Logger
+        self.log = Logger('download').getLogger()
 
     def on_modified(self, event):
         if event.src_path.endswith('.py'):
-            logger.info(f"Change detected in {event.src_path}, reloading cogs...")
+            self.log.info(f"Change detected in {event.src_path}, reloading cogs...")
             asyncio.run_coroutine_threadsafe(self.reload_cogs(), self.bot.loop)
 
     #Reloads the cogs
@@ -31,4 +27,4 @@ class Filewatcher(FileSystemEventHandler):
             if filename.endswith('.py'):
                 await self.bot.unload_extension(f'cogs.{filename[:-3]}')
                 await self.bot.load_extension(f'cogs.{filename[:-3]}')
-                logger.info(f"Module {filename} reloaded.")
+                self.log.info(f"Module {filename} reloaded.")

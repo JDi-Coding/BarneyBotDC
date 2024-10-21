@@ -9,15 +9,12 @@ from config import settings
 
 
 from cogs.download.download import Download
-
-import logging
-#logging.config.dictConfig(settings.LOGGING_CONFIG)
-logger = logging.getLogger('bot')
-
+from loggin import Logger
 
 class DownloadCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.log = Logger('download').getLogger()
 
     DownloadGroup = app_commands.Group(name="download", description="download videos from the internet", guild_ids=PREMIUM_GUILD_IDS)
 
@@ -29,7 +26,7 @@ class DownloadCog(commands.Cog):
             Download(url)
             await interaction.edit_original_response(content="Video Heruntergeladen")
         except Exception as e:
-            logger.error(f"Error: async def download: {e}")
+            self.log.error(f"Error: async def download: {e}")
             await  interaction.edit_original_response(content=f"Fehler beim Herunterladen: {e}")
 
 

@@ -5,10 +5,6 @@ import traceback
 import discord
 from discord.ext import commands
 from discord import app_commands
-import logging
-#from config.settings import LOGGING_CONFIG
-#logging.config.dictConfig(LOGGING_CONFIG)
-logger = logging.getLogger('minecraft')
 from cogs.games.minecraft.game import *
 from mcstatus import JavaServer
 
@@ -18,6 +14,8 @@ from mcstatus import JavaServer
 class Minecraft(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        from loggin import Logger
+        self.log = Logger('minecraft').getLogger()
 
     mc = app_commands.Group(name="mc", description="mc befehle")
 

@@ -2,16 +2,14 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import logging
-#from config.settings import LOGGING_CONFIG
 from gtts import gTTS
 import os
-
-#logging.config.dictConfig(LOGGING_CONFIG)
-logger = logging.getLogger('tts')
 
 class TTS(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        from loggin import Logger
+        self.log = Logger('tts').getLogger()
 
     TTSGroup = app_commands.Group(name="tts", description="tts")
     #Creates a temporary tts.mp3 file and plays it

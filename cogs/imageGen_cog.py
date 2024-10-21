@@ -7,9 +7,7 @@ from discord.ext import commands
 from discord import app_commands
 import logging
 from cogs.imageGen.generateImage import ImageGen
-#from config.settings import LOGGING_CONFIG
-#logging.config.dictConfig(LOGGING_CONFIG)
-logger = logging.getLogger('image-gen')
+
 
 
 from diffusers import StableDiffusionPipeline
@@ -20,6 +18,8 @@ from safetensors.torch import load_file
 class GenImage(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        from loggin import Logger
+        self.log = Logger('image-gen').getLogger()
 
     gen = app_commands.Group(name="gen", description="group for generating stuff")
 
@@ -70,7 +70,7 @@ class GenImage(commands.Cog):
             await interaction.edit_original_response(embed=embed, attachments=[file])
             os.remove(imagepath)
         except Exception as e:
-            logger.error(f"Error in def genimage: {e}")
+            self.log.error(f"Error in def genimage: {e}")
 
 
 

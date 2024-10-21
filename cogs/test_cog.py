@@ -5,7 +5,6 @@ from discord import app_commands
 from discord.ext import commands
 from cogs.test.test import test_function_1, test_function_2, test_function_3
 from config.config import TEST_GUILD_IDS
-#from config.settings import LOGGING_CONFIG
 from config.utils import has_premium_access
 
 from loggin import Logger
@@ -80,91 +79,12 @@ class TestCog(commands.Cog):
        
     @TestGroup.command(name="testlog", description="testet die logs des bots")
     async def test_command_7(self, interaction: discord.Interaction):
-        try:    
-            testlogger = logging.getLogger('bot')
-            testlogger.debug("Debug")
-            testlogger.info("Info")
-            testlogger.warning("Warning")
-            testlogger.error("Error")
-            testlogger.critical("CRITICAL")
-            del testlogger
-            testlogger = logging.getLogger('test')
-            testlogger.debug("Debug")
-            testlogger.info("Info")
-            testlogger.warning("Warning")
-            testlogger.error("Error")
-            testlogger.critical("CRITICAL")
-            del testlogger
-            testlogger = logging.getLogger('basic')
-            testlogger.debug("Debug")
-            testlogger.info("Info")
-            testlogger.warning("Warning")
-            testlogger.error("Error")
-            testlogger.critical("CRITICAL")
-            del testlogger
-            testlogger = logging.getLogger('logging')
-            testlogger.debug("Debug")
-            testlogger.info("Info")
-            testlogger.warning("Warning")
-            testlogger.error("Error")
-            testlogger.critical("CRITICAL")
-            del testlogger        
-            testlogger = logging.getLogger('memes')
-            testlogger.debug("Debug")
-            testlogger.info("Info")
-            testlogger.warning("Warning")
-            testlogger.error("Error")
-            testlogger.critical("CRITICAL")
-            del testlogger
-            testlogger = logging.getLogger('monitor')
-            testlogger.debug("Debug")
-            testlogger.info("Info")
-            testlogger.warning("Warning")
-            testlogger.error("Error")
-            testlogger.critical("CRITICAL")
-            del testlogger        
-            testlogger = logging.getLogger('music')
-            testlogger.debug("Debug")
-            testlogger.info("Info")
-            testlogger.warning("Warning")
-            testlogger.error("Error")
-            testlogger.critical("CRITICAL")
-            del testlogger        
-            testlogger = logging.getLogger('player')
-            testlogger.debug("Debug")
-            testlogger.info("Info")
-            testlogger.warning("Warning")
-            testlogger.error("Error")
-            testlogger.critical("CRITICAL")
-            del testlogger        
-            testlogger = logging.getLogger('playlist_embed')
-            testlogger.debug("Debug")
-            testlogger.info("Info")
-            testlogger.warning("Warning")
-            testlogger.error("Error")
-            testlogger.critical("CRITICAL")
-            del testlogger        
-            testlogger = logging.getLogger('tempvoice')
-            testlogger.debug("Debug")
-            testlogger.info("Info")
-            testlogger.warning("Warning")
-            testlogger.error("Error")
-            testlogger.critical("CRITICAL")
-            del testlogger
-            testlogger = logging.getLogger('voice')
-            testlogger.debug("Debug")
-            testlogger.info("Info")
-            testlogger.warning("Warning")
-            testlogger.error("Error")
-            testlogger.critical("CRITICAL-dog")
-            del testlogger
-
-            loggintest.debug("Debug-cat")
-            loggintest.info("Info-cat")
-            loggintest.warning("Warning-cat")
-            loggintest.error("Error cat ")
-            loggintest.critical("CRITICAL cat")
-            #del logtest
+        try:
+            self.log.debug("Debug")
+            self.log.info("Info")
+            self.log.warning("Warning")
+            self.log.error("Error")
+            self.log.critical("CRITICAL")
 
             await interaction.response.send_message("ERFOLGREICH")
         except Exception as e:
