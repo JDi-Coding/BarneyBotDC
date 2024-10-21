@@ -178,10 +178,6 @@ class Player:
         self.current_index = song
         print(self.current_index)
 
-#######################
-#Funktionalität
-#######################
-
     def pause(self, voice_client):
         if voice_client.is_playing():
             voice_client.pause()
