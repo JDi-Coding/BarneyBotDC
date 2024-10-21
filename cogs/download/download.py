@@ -11,7 +11,7 @@ from discord import app_commands
 from discord.ext import commands
 import logging
 from config import settings
-logging.config.dictConfig(settings.LOGGING_CONFIG)
+#logging.config.dictConfig(settings.LOGGING_CONFIG)
 logger = logging.getLogger('bot')
 
 class Download:

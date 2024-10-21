@@ -1,7 +1,7 @@
 import logging
 import os
-from config.settings import LOGGING_CONFIG
-logging.config.dictConfig(LOGGING_CONFIG)
+#from config.settings import LOGGING_CONFIG
+#logging.config.dictConfig(LOGGING_CONFIG)
 from discord.ext import commands
 
 
@@ -52,7 +52,7 @@ def setup_logging():
 class LoggingCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        setup_logging()
+        #setup_logging()
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):

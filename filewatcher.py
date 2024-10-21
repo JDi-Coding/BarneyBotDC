@@ -4,10 +4,11 @@ import asyncio
 from sympy import false
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
-from config.settings import LOGGING_CONFIG
+
 import logging
 
-logging.config.dictConfig(LOGGING_CONFIG)
+#from config.settings import LOGGING_CONFIG
+#logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger('file-watcher')
 
 

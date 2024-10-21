@@ -11,7 +11,7 @@ from config import settings
 from cogs.download.download import Download
 
 import logging
-logging.config.dictConfig(settings.LOGGING_CONFIG)
+#logging.config.dictConfig(settings.LOGGING_CONFIG)
 logger = logging.getLogger('bot')
 
 

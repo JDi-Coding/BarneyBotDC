@@ -7,8 +7,8 @@ import sys
 from config.config import PREMIUM_GUILD_IDS, TEST_GUILD_IDS
 from colorama import Fore, Style, init
 import logging.config
-from config.settings import LOGGING_CONFIG
-logging.config.dictConfig(LOGGING_CONFIG)
+#from config.settings import LOGGING_CONFIG
+#logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger('startup')
 
 sys.stdout.reconfigure(encoding='utf-8')

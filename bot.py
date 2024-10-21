@@ -1,16 +1,16 @@
 # bot.py
-# import logging
+import logging
 import discord
 from discord.ext import commands
 from config.config import TOKEN, COMMAND_PREFIX, PREMIUM_GUILD_IDS, TEST_GUILD_IDS  # GUILD_ID importieren
-from config.settings import LOGGING_CONFIG
-import logging.config
+#from config.settings import LOGGING_CONFIG
+#import logging.config
 
 from startup import Startup
 from filewatcher import Filewatcher
 
 # Logging konfigurieren
-logging.config.dictConfig(LOGGING_CONFIG)
+#logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger('bot')
 
 # Bot-Initialisierung

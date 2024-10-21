@@ -5,9 +5,9 @@ from discord import app_commands
 from discord.ext import commands
 
 from config.config import PREMIUM_GUILD_IDS
-from config.settings import LOGGING_CONFIG
+#from config.settings import LOGGING_CONFIG
 
-logging.config.dictConfig(LOGGING_CONFIG)
+#logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger('bot')
 
 class Premium(commands.Cog):

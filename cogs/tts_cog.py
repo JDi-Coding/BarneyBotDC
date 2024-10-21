@@ -2,11 +2,11 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import logging
-from config.settings import LOGGING_CONFIG
+#from config.settings import LOGGING_CONFIG
 from gtts import gTTS
 import os
 
-logging.config.dictConfig(LOGGING_CONFIG)
+#logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger('tts')
 
 class TTS(commands.Cog):

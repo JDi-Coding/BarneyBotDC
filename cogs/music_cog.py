@@ -6,9 +6,9 @@ from discord.ext import commands
 
 from cogs.Music.player import Player
 from cogs.Music.playlist_embed import PlaylistEmbed
-from config.settings import LOGGING_CONFIG
+#from config.settings import LOGGING_CONFIG
 
-logging.config.dictConfig(LOGGING_CONFIG)
+#logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger('music')
 
 
