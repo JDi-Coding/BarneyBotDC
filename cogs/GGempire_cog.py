@@ -3,6 +3,7 @@ from datetime import datetime
 
 import mysql.connector
 import discord
+import nltk
 from discord import app_commands
 from discord.ext import commands
 from discord import Embed
@@ -11,7 +12,8 @@ from config.config import db_host, db_port, db_user, db_password, dbname
 
 from cogs.games.good_game_empire.game import *
 
-
+import spacy
+nlp = spacy.load("de_core_news_sm")
 
 class GGEmpire(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -91,6 +93,53 @@ class GGEmpire(commands.Cog):
     async def report_attack(self, interaction: discord.Interaction, world: str, defender_name: str, coords_defender: str,attacker_name: str, coords_attacker: str, alliance_attacker: str, time_until_arrival: str):
         result_report_attack = await report_attack(interaction, world, defender_name, coords_defender, attacker_name,coords_attacker, alliance_attacker, time_until_arrival)
 
+    @gg_group.command(name="helpmes", description="I help you with Topics in GGEmpire")
+    async def helpme(self, interaction: discord.Interaction, problem: str):
+        # NLP-Analyse: Identifiziere die Kategorie (Flag) und Kontextdaten
+        flag, details = self.get_problem_flag(problem)
+        antwort = self.generate_response(flag, details)
+        await interaction.response.send_message(f"Support Antwort: {antwort}")
+
+    def get_problem_flag(self, problem: str):
+        """
+        Analyse des Benutzerproblems und Kategorisierung für spezifische Spielaspekte
+        """
+        doc = nlp(problem.lower())
+        keywords = {
+            "Ressourcen": {"holz", "stein", "nahrung", "münzen", "ressourcen"},
+            "Truppen": {"soldaten", "verteidigung", "angriff", "belagerung", "truppen"},
+            "Gebäude": {"burg", "schmiede", "marktplatz", "gebäude"},
+            "Verbindung": {"internet", "verbindung", "server", "netzwerk"},
+            "Zahlung": {"zahlung", "kreditkarte", "rechnung", "kosten", "kauf"}
+        }
+
+        self.log.debug(f"User-Problem: '{problem}'")
+
+        # Kategorie bestimmen
+        for category, terms in keywords.items():
+            if any(token.lemma_ in terms or token.text in terms for token in doc):
+                return category, problem  # Category and raw problem text for further response generation
+
+        # Falls keine spezifische Kategorie gefunden wurde
+        return "Allgemein", problem
+
+    def generate_response(self, flag: str, details: str) -> str:
+        """
+        Erzeugt eine Antwort basierend auf der Kategorie und spezifischen Details des Problems.
+        """
+        # Context-Handling basierend auf dem Flag (erweitert mit spezifischen Fragen)
+        if flag == "Ressourcen":
+            return "Ich sehe, dass Sie ein Problem mit Ressourcen haben. Benötigen Sie Tipps zur Ressourcenerzeugung oder -verwaltung?"
+        elif flag == "Truppen":
+            return "Es sieht so aus, als gäbe es ein Problem mit den Truppen. Möchten Sie Hilfe bei der Verteidigung oder dem Angriff?"
+        elif flag == "Gebäude":
+            return "Es scheint ein Problem mit Gebäuden zu geben. Geht es um den Bau, das Upgrade oder die Nutzung bestimmter Gebäude?"
+        elif flag == "Verbindung":
+            return "Es scheint ein Verbindungsproblem zu geben. Bitte überprüfen Sie Ihre Verbindung oder den Serverstatus."
+        elif flag == "Zahlung":
+            return "Es gibt ein Problem mit der Zahlung. Überprüfen Sie bitte Ihre Zahlungsinformationen oder kontaktieren Sie den Support für weitere Hilfe."
+        else:
+            return "Vielen Dank für Ihre Anfrage! Unser Support-Team wird sich in Kürze bei Ihnen melden."
 
 
 # Setup Funktion für den Cog

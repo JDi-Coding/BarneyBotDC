@@ -9,6 +9,40 @@ from config.utils import has_premium_access
 
 from loggin import Logger
 
+import nltk
+#nltk.data.path.clear()
+#nltk.download('punkt_tab')
+
+
+def get_support_response(flag: str) -> str:
+    """Basierend auf dem Flag wird die passende Antwort erstellt."""
+    if flag == "nahrung":
+        return "Es sieht so aus, als hättest du ein Problem mit Lebensmitteln. Bitte beschreibe es genauer."
+    elif flag == "verbindung":
+        return "Es scheint ein Problem mit der Verbindung zu geben. Überprüfe bitte deine Internetverbindung."
+    elif flag == "zahlung":
+        return "Es scheint ein Problem mit deiner Zahlung zu geben. Bitte überprüfe deine Zahlungsinformationen."
+    else:
+        return "Vielen Dank für deine Anfrage! Unser Support-Team wird sich in Kürze bei dir melden."
+
+
+def get_nlp_flag(problem: str) -> str:
+        #nltk.download('all')
+        print(nltk.data.path)
+        """Eine einfache NLP-Methode, um das Problem zu analysieren und ein Flag zurückzugeben."""
+        problem = problem.lower()
+        tokens = nltk.word_tokenize(problem)  # Zerlege den Satz in Wörte
+        # Einfache Schlüsselwortbasierte Erkennung (dies kann später durch komplexere Modelle ersetzt werden)
+        if any(word in tokens for word in ["essen", "trinken", "nahrung", "lebensmittel"]):
+            return "nahrung"
+        elif any(word in tokens for word in ["internet", "verbindung", "server", "netzwerk"]):
+            return "verbindung"
+        elif any(word in tokens for word in ["zahlung", "rechnung", "kreditkarte", "paypal"]):
+            return "zahlung"
+        else:
+            return "unbekannt"
+
+
 class TestCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -95,6 +129,20 @@ class TestCog(commands.Cog):
     async def test_command_8(self, interaction: discord.Interaction):
         foldertest = test_function_3()
         await interaction.response.send_message(f"Test 3: {foldertest}")
+
+    def generate_response(self, flag: str) -> str:
+        # Basierend auf dem Flag eine Antwort erzeugen
+        if flag == "Nahrung":
+            return "Es sieht nach einem Problem im Bereich Nahrung oder Bestellung aus. Kann ich Ihnen bei einer Essensbestellung helfen?"
+        elif flag == "Verbindung":
+            return "Es scheint ein Problem mit der Internetverbindung zu geben. Bitte überprüfe deine Verbindung oder unseren Serverstatus."
+        elif flag == "Zahlung":
+            return "Es gibt ein Problem mit der Zahlung. Bitte überprüfe deine Zahlungsinformationen oder kontaktiere den Support."
+        else:
+            return "Vielen Dank für deine Anfrage! Unser Support-Team wird sich in Kürze bei dir melden."
+
+    # Bot Setup
+
     @commands.command()
     async def test_text_1(self, ctx):
         guild_id = ctx.guild.id
@@ -102,7 +150,6 @@ class TestCog(commands.Cog):
             await ctx.send("Du hast Zugriff auf das Premium-Text-Feature!")
         else:
             await ctx.send("Dieses Feature ist nur für Premium-Server verfügbar.")
-
 
 
 async def setup(bot):

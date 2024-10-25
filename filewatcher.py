@@ -9,12 +9,13 @@ from watchdog.observers import Observer
 class Filewatcher(FileSystemEventHandler):
     def __init__(self, bot):
         self.bot = bot
-        logger.info("Started watching for file changes...")
+
         self.observer = Observer()
         self.observer.schedule(self, path='./cogs', recursive=False)
         self.observer.start()
         from loggin import Logger
         self.log = Logger('download').getLogger()
+        #log.info("Started watching for file changes...")
 
     def on_modified(self, event):
         if event.src_path.endswith('.py'):
