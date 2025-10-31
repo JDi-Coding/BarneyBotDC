@@ -8,7 +8,6 @@ from cogs.Music.player import Player
 from cogs.Music.playlist_embed import PlaylistEmbed
 
 
-
 def convert_to_float(value: str) -> float:
     """Hilfsfunktion, um Komma in Punkt zu ändern und String in Float umzuwandeln."""
     value = value.replace(',', '.')  # Ersetze Komma mit Punkt
@@ -80,26 +79,20 @@ class Music(commands.Cog):
         else:
             await interaction.response.send_message("I'm not connected to a voice channel.", ephemeral=True)
 
-    @MusicGroup.command(name="skip", description="skip songs")
-    async def skip(self, interaction: discord.interactions):
-        print()
-        await interaction.response.send_message("Skiped", ephemeral=True)
-    
-    @MusicGroup.command(name="shuffle", description="shuffelt die Playlist")
-    async def shuffle(self, interaction: discord.interactions):
-        print()
-        await interaction.response.send_message("Shuffle", ephemeral=True)
-
-    @MusicGroup.command(name="loop", description="loopt die Ganze PLaylist oder einzelne Songs")
+    @MusicGroup.command(name="loop", description="loopt die Ganze Playlist oder einzelne Songs")
     async def loop(self, interaction: discord.interactions):
-        print()
-        await interaction.response.send_message("looped", ephemeral=True)
 
-    @MusicGroup.command(name="remove", description="removed titel aus der Playlist")
-    async def remove(self, interaction: discord.interactions):
-        print()
-        await interaction.response.send_message("removed", ephemeral=True) 
-   
+        self.player.looped = not self.player.looped
+
+        looped = self.player.looped
+
+        if looped is True:
+            await interaction.response.send_message("looping playlist")
+        else:
+            await interaction.response.send_message("De-looping playlist")
+
+
+
     @MusicGroup.command(name="volume", description="Setzt die Lautstärke")
     async def volume(self, interaction: discord.Interaction, volume: str):
         try:
@@ -113,6 +106,7 @@ class Music(commands.Cog):
         except ValueError as e:
             self.log.error(str(e))
             await interaction.response.send_message("Wert muss Zwischen 0.01 und 3.0 sein", ephemeral=True)
+
   
     @MusicGroup.command(name="bass", description="Boosted den bass nutze bitte , statt .")
     async def bass(self, interaction: discord.interactions, bass: str):
@@ -127,6 +121,8 @@ class Music(commands.Cog):
         except ValueError as e:
             self.log.error(str(e))
             await interaction.response.send_message("Wert muss Zwischen 0.01 und 3.0 sein", ephemeral=True)
+
+
     @MusicGroup.command(name="treble", description="veraendere den treble")  
     async def treble(self, interaction: discord.interactions, bass: str):
         try:
@@ -141,36 +137,41 @@ class Music(commands.Cog):
             self.log.error(str(e))
             await interaction.response.send_message("Wert muss Zwischen 0.01 und 3.0 sein", ephemeral=True)
         
-    @MusicGroup.command(name="nodupe", description="Entfernt alle Duplikate")
-    async def nodupe(self, interaction: discord.interactions):
-        print()
-        await interaction.response.send_message("Duplikate Entfernt", ephemeral=True)
-        
-    @MusicGroup.command(name="resetpl", description="setzt alle Playlist settings auf Default")
-    async def resetplsettings(self, interaction: discord.interactions):
-        print()
-        await interaction.response.send_message("Playlistsettings reseted", ephemeral=True)
-  
-    @MusicGroup.command(name="back", description="Springt um 1 ind er PLaylist zurück")
-    async def back(self, interaction: discord.interactions):
-        print()
-        await interaction.response.send_message("zurück gesprungen", ephemeral=True)
-        
-    @MusicGroup.command(name="sktipto", description="skipt zu einem Song")
-    async def skipto(self, interaction: discord.interactions):
-        print()
-        await interaction.response.send_message("zu Song geskipt", ephemeral=True)
-        
     @MusicGroup.command(name="plpanel", description="Erzeugt ein Queue Command Panel")
     async def plpanel(self, interaction: discord.interactions):
-        print()
-        await interaction.response.send_message("Panel Erzeugt", ephemeral=True)
 
-    @MusicGroup.command(name="radio", description="lässt den Bot in ein Radio Channel Joinen")
-    async def radio(self, interaction: discord.interactions):
-        print()
-        await interaction.response.send_message("Radio", ephemeral=True)
-    
+        embed_plpanel = discord.Embed(
+            title="Playlist Settings",
+            color=discord.Color.blue()
+        )
+        embed_plpanel.add_field(
+            name="Loop",
+            value=bool(self.player.looped),
+            inline=False
+        )
+        embed_plpanel.add_field(
+            name="Volume",
+            value=f"{int(self.player.volume*100)}%",
+            inline=True
+        )
+        embed_plpanel.add_field(
+            name="Bass Boost",
+            value=f"{int(self.player.bass*100)}%",
+            inline=False
+        )
+        embed_plpanel.add_field(
+            name="Treble level",
+            value=f"{int(self.player.treble*100)}%",
+            inline=False
+        )
+
+        embed_plpanel.set_footer(
+            text="FOOTER-TEST"
+        )
+
+        await interaction.response.send_message(embed=embed_plpanel)
+
+
     @MusicGroup.command(name="playlist", description="Show the current playlist.")
     async def playlist(self, interaction: discord.Interaction):
         if self.player.is_empty():

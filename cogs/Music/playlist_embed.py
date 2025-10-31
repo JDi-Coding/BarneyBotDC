@@ -1,10 +1,15 @@
 import discord
 
+def convert_seconds_to_duration(sec):
+    m, s = divmod(sec, 60)
+    return f"{m}:{s:02d}"
+
+
 class PlaylistEmbed:
     def __init__(self, playlist):
         self.playlist = playlist
         self.current_page = 0
-        self.max_songs_per_page = 5
+        self.max_songs_per_page = 10
         from loggin import Logger
         self.log = Logger('minecraft').getLogger()
 
@@ -13,7 +18,7 @@ class PlaylistEmbed:
         current_song = self.playlist.get_current_song()
         thumbnail_url = current_song['thumbnail'] if current_song else None
         embed = discord.Embed(
-            title="🎵 Playlist [{}]".format(len(self.playlist.songs)),
+            title="🎵 Playlist [{}]".format(len(self.playlist.tracks)),
             color=discord.Color.blue()
         )
         # Thumbnail hinzufügen
@@ -33,16 +38,22 @@ class PlaylistEmbed:
         # Songs auf der aktuellen Seite in einem einzigen Feld sammeln
         start_index = self.current_page * self.max_songs_per_page
         end_index = start_index + self.max_songs_per_page
-        songs = self.playlist.songs[start_index:end_index]
+        songs = self.playlist.tracks[start_index:end_index]
         # Hier sammeln wir alle Songs in einem String
         song_list = ""
+
+        total_duration = 0
+
         for i, song in enumerate(songs, start=1):
             title = song['title']
             url = song['shorturl']
             duration = song['duration']
             added_by = song['added_by']
+            total_duration += song['seconds']
+
             # Füge den Song zur Liste hinzu
             song_list += f"Nr.{i}: [{title}]({url}) | Duration: {duration} | Added by: {added_by}\n"
+
         # Alle Songs in einem einzigen Feld hinzufügen
         if song_list:
             embed.add_field(
@@ -52,9 +63,9 @@ class PlaylistEmbed:
             )
         else:
             embed.add_field(name="Songs", value="No songs in the playlist.", inline=False)
+
         # Gesamtdauer der Playlist
-        total_duration = self.playlist.get_total_duration()
-        embed.set_footer(text=f"Total Duration: {total_duration}")
+        embed.set_footer(text=f"Total Duration: {convert_seconds_to_duration(total_duration)}")
         return embed
 
     def create_buttons(self):
@@ -65,7 +76,7 @@ class PlaylistEmbed:
         return buttons
 
     def next_page(self):
-        if (self.current_page + 1) * self.max_songs_per_page < len(self.playlist.songs):
+        if (self.current_page + 1) * self.max_songs_per_page < len(self.playlist.tracks):
             self.current_page += 1
 
     def previous_page(self):
